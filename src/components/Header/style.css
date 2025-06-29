@@ -1,0 +1,29 @@
+.navbar {
+    width: auto;
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px black solid;
+    background-color: rgb(234, 234, 234);
+    border-radius: 8px 8px 0 0;
+}
+
+.navbar a {
+  font-family: 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  color: #222;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+  color: #007bff;
+}
+
+.navbar a.active {
+  color: #0056b3;
+  text-decoration: underline;
+}
