@@ -1,0 +1,7 @@
+.dcontainer {
+    display: flex;
+}
+.mcontainer {
+    display: flex;
+    flex-direction: column;
+}

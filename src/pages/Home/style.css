@@ -1,3 +1,8 @@
 .home {
     margin-top: 1em;
 }
+
+.home-first-row {
+    display: flex;
+    justify-content: space-evenly;
+}

@@ -1,12 +1,10 @@
+import { DESCRIPTION, TITLE } from './constants';
 import './style.css'
-const Description = () => {
+const Description: React.FC = () => {
   return (
     <div className="description">
-      <h2>Annuaire en ligne</h2>
-      <p>
-        Gérez les documents de toute la famille en un seul endroit.
-        Besoin du passeport de votre fils ? Cliquez, téléchargez et le tour est joué !
-      </p>
+      <h2> { TITLE } </h2>
+      <p> { DESCRIPTION } </p>
     </div>
   );
 }

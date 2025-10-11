@@ -8,9 +8,6 @@ const Header = () => {
             <NavLink to='/pool'>
                 {LABEL_HEADER.POOL}
             </NavLink>
-            <NavLink to='/doc'>
-                {LABEL_HEADER.DOCS}
-            </NavLink>
             <NavLink to='/'>
                 {LABEL_HEADER.HOME}
             </NavLink>
