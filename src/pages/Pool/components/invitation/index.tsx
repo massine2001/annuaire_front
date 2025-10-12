@@ -1,0 +1,137 @@
+import { useState } from "react";
+import { useToast } from "../../../../hooks/useToast";
+import { Toast } from "../../../../components/Toast";
+import { DEFAULT_EMAIL_TEMPLATE, generateInvitationLink } from "./constants";
+import { useSendInvitations } from "./hooks/useSendInvitations";
+import EmailInputSection from "./components/EmailInputSection";
+import MessageEditor from "./components/MessageEditor";
+import SendModal from "./components/SendModal";
+import InvitationHistory from "./components/InvitationHistory";
+import "./style.css";
+
+type Props = {
+  poolId: number;
+  poolName: string;
+  currentUserName: string;
+};
+
+const InvitationTab = ({ poolId, poolName, currentUserName }: Props) => {
+  const { toast, showSuccess, showError, hideToast } = useToast();
+  
+  const [emailList, setEmailList] = useState<string[]>([]);
+  const [emailMessage, setEmailMessage] = useState(
+    DEFAULT_EMAIL_TEMPLATE(poolName, currentUserName, "")
+  );
+  const [showSendModal, setShowSendModal] = useState(false);
+
+  const { copyToClipboard, openGmail, openMailClient, downloadAsFile } = useSendInvitations({
+    poolId,
+    poolName,
+    emailMessage,
+  });
+
+  const handleSendMethod = async (method: () => Promise<boolean> | boolean) => {
+    const result = await method();
+    if (result) {
+      setShowSendModal(false);
+      setEmailList([]);
+    }
+  };
+
+  const handleAddEmail = (email: string) => {
+    setEmailList([...emailList, email]);
+  };
+
+  const handleRemoveEmail = (emailToRemove: string) => {
+    setEmailList(emailList.filter(e => e !== emailToRemove));
+  };
+
+  const handleResetTemplate = () => {
+    const sampleLink = generateInvitationLink(poolId, "exemple@email.com");
+    setEmailMessage(DEFAULT_EMAIL_TEMPLATE(poolName, currentUserName, sampleLink));
+    showSuccess("Template réinitialisé");
+  };
+
+  const handleSendInvitations = () => {
+    if (emailList.length === 0) {
+      showError("Veuillez ajouter au moins une adresse email");
+      return;
+    }
+    setShowSendModal(true);
+  };
+
+  const handleReset = () => {
+    setEmailList([]);
+    setEmailMessage(DEFAULT_EMAIL_TEMPLATE(poolName, currentUserName, ""));
+  };
+
+  return (
+    <div className="invitation-tab">
+      <div className="invitation-tab__header">
+        <h2 className="invitation-tab__title">✉️ Inviter des membres</h2>
+        <p className="invitation-tab__subtitle">
+          Invitez de nouvelles personnes à rejoindre <strong>{poolName}</strong>
+        </p>
+      </div>
+
+      <div className="invitation-tab__content">
+        <EmailInputSection
+          emailList={emailList}
+          onAddEmail={handleAddEmail}
+          onRemoveEmail={handleRemoveEmail}
+          onClearAll={() => setEmailList([])}
+        />
+
+        <MessageEditor
+          message={emailMessage}
+          poolName={poolName}
+          onMessageChange={setEmailMessage}
+          onReset={handleResetTemplate}
+        />
+
+        <div className="invitation-tab__actions">
+          <button
+            className="invitation-tab__btn invitation-tab__btn--secondary"
+            onClick={handleReset}
+          >
+            Annuler
+          </button>
+          
+          <button
+            className="invitation-tab__btn invitation-tab__btn--success"
+            onClick={handleSendInvitations}
+            disabled={emailList.length === 0}
+          >
+            ✉️ Envoyer {emailList.length > 0 ? `(${emailList.length})` : ''}
+          </button>
+        </div>
+
+        <InvitationHistory invitations={[{email:'agharmiou@mail', sentAt:'10/12/2025', status:'accepted'}]}/>
+
+        <div className="invitation-tab__note">
+          <strong>ℹ️ Note :</strong> Choisissez la méthode d'envoi qui vous convient le mieux parmi les options proposées.
+        </div>
+      </div>
+
+      <SendModal
+        isOpen={showSendModal}
+        emailCount={emailList.length}
+        onClose={() => setShowSendModal(false)}
+        onCopyToClipboard={() => handleSendMethod(() => copyToClipboard(emailList))}
+        onOpenGmail={() => handleSendMethod(() => openGmail(emailList))}
+        onOpenMailClient={() => handleSendMethod(() => openMailClient(emailList))}
+        onDownloadAsFile={() => handleSendMethod(() => downloadAsFile(emailList))}
+      />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
+      )}
+    </div>
+  );
+};
+
+export default InvitationTab;

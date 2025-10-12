@@ -2,22 +2,52 @@ import axiosClient from './axiosClient';
 import type { File } from '../types/models';
 
 export const fetchAllFiles = () =>
-  axiosClient.get<File[]>('/file/').then(res => res.data);
+  axiosClient.get<File[]>('/files').then(res => res.data);
 
-export const uploadFile = (file: globalThis.File, poolId: number, userId: number) => {
+export const uploadFile = (
+  file: globalThis.File, 
+  poolId: number, 
+  userId: number,
+  description?: string,
+  expirationDate?: string
+) => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('poolId', poolId.toString());
   formData.append('userId', userId.toString());
+  if (description) formData.append('description', description);
+  if (expirationDate) formData.append('expirationDate', expirationDate);
   
-  return axiosClient.post('/file/upload', formData, {
+  return axiosClient.post('/files/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   });
 };
 
+export const updateFile = (
+  fileId: number, 
+  newFile?: globalThis.File,
+  name?: string,
+  description?: string,
+  expirationDate?: string
+) => {
+  const formData = new FormData();
+  if (newFile) formData.append('file', newFile);
+  if (name) formData.append('name', name);
+  if (description) formData.append('description', description);
+  if (expirationDate) formData.append('expirationDate', expirationDate);
+  
+  return axiosClient.put(`/files/${fileId}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
+export const deleteFile = (fileId: number) => {
+  return axiosClient.delete(`/files/${fileId}`);
+};
+
 export const downloadFile = async (fileId: number, fileName: string) => {
   try {
-    const response = await axiosClient.get(`/file/download/${fileId}`, {
+    const response = await axiosClient.get(`/files/download/${fileId}`, {
       responseType: 'blob',
     });
 
@@ -40,8 +70,7 @@ export const downloadFile = async (fileId: number, fileName: string) => {
 
 export const previewFile = async (fileId: number) => {
   try {
-    
-    const response = await axiosClient.get(`/file/preview/${fileId}`, {
+    const response = await axiosClient.get(`/files/preview/${fileId}`, {
       responseType: 'blob',
     });
 

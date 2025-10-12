@@ -18,6 +18,8 @@ export interface File {
   id: number;
   name: string;
   path: string;
+  description?: string;
+  expirationDate?: string;
   pool: Pool;
   userUploader: User;
   createdAt: string;

@@ -6,11 +6,12 @@ type Props = {
   file: File;
   onPreview: (id: number, name: string) => void;
   onDownload: (id: number, name: string) => void;
+  onDetails: (file: File) => void;
   isPreviewing: boolean;
   isDownloading: boolean;
 };
 
-export const FileRow = memo(({ file, onPreview, onDownload, isPreviewing, isDownloading }: Props) => {
+export const FileRow = memo(({ file, onPreview, onDownload, onDetails, isPreviewing, isDownloading }: Props) => {
   const ext = useMemo(() => (getExt(file.name) || "").slice(0, 3).toUpperCase(), [file.name]);
 
   return (
@@ -27,6 +28,13 @@ export const FileRow = memo(({ file, onPreview, onDownload, isPreviewing, isDown
       </div>
 
       <div className="files-tab__file-actions">
+        <button
+          className="files-tab__action-btn"
+          title="Détails"
+          onClick={() => onDetails(file)}
+        >
+          ℹ️
+        </button>
         <button
           className="files-tab__action-btn"
           title="Prévisualiser"

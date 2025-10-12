@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import type { Pool } from "../../../../types/models";
 import InfoTab from "../InfoTab";
 
 import EmptyState from "./EmptyState";
 import "./style.css";
 import FilesTab from "../FilesTab";
+import FileEditionTab from "../FileEditionTab";
+import MembersTab from "../MembersTab";
+import InvitationTab from "../invitation";
 
-type TabType = "info" | "members" | "invitations" | "documents";
+type TabType = "info" | "members" | "invitations" | "documents" | "edit";
 
 const PoolDashboard = ({ pool }: { pool: Pool | null }) => {
-  const [activeTab, setActiveTab] = useState<TabType>("info");
+  const [activeTab, setActiveTab] = useState<TabType>("documents");
 
   if (!pool) {
     return <EmptyState />;
@@ -27,6 +30,12 @@ const PoolDashboard = ({ pool }: { pool: Pool | null }) => {
           onClick={() => setActiveTab("documents")}
         >
           Documents
+        </button>
+        <button
+          className={`pool-dashboard__tab ${activeTab === "edit" ? "pool-dashboard__tab--active" : ""}`}
+          onClick={() => setActiveTab("edit")}
+        >
+          Edition d'un document
         </button>
         <button
           className={`pool-dashboard__tab ${activeTab === "info" ? "pool-dashboard__tab--active" : ""}`}
@@ -52,7 +61,10 @@ const PoolDashboard = ({ pool }: { pool: Pool | null }) => {
       <div className="pool-dashboard__content">
         {activeTab === "info" && <InfoTab poolId={pool.id} />}
         {activeTab === "documents" && <FilesTab poolId={pool.id} />}
-     
+        {activeTab === "edit" && <FileEditionTab poolId={pool.id} />}
+        {activeTab === "members" && <MembersTab poolId={pool.id} />}
+        {activeTab === "invitations" && <InvitationTab poolId={pool.id} poolName={pool.name} currentUserName={'massine'} />}
+
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useFetch } from "../../../../hooks/useFetch";
 import { fetchFilesByPoolId } from "../../../../api/poolPageApi";
 import { downloadFile, previewFile } from "../../../../api/filePageApi";
@@ -7,6 +7,7 @@ import "./style.css";
 import { GroupedList } from "./components/GroupedList";
 import { HeaderBar } from "./components/HeaderBar";
 import { PreviewModal } from "./components/PreviewModal";
+import { DetailsModal } from "./components/DetailsModal";
 import { useFilteredFiles } from "./hooks/useFilteredFiles";
 import { useGroupedFiles } from "./hooks/useGroupedFiles";
 
@@ -16,7 +17,7 @@ const FilesTab = ({ poolId }: { poolId: number }) => {
   const fetcher = useCallback(() => fetchFilesByPoolId(poolId), [poolId]);
   const { data: files, loading, error } = useFetch<File[]>(fetcher);
 
-  const [grouping, setGrouping] = useState<GroupingType>("date");
+  const [grouping, setGrouping] = useState<GroupingType>("member");
   const [searchTerm, setSearchTerm] = useState("");
 
   const [downloading, setDownloading] = useState<number | null>(null);
@@ -25,6 +26,8 @@ const FilesTab = ({ poolId }: { poolId: number }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileName, setPreviewFileName] = useState<string>("");
   const [previewContentType, setPreviewContentType] = useState<string>("");
+
+  const [selectedFileForDetails, setSelectedFileForDetails] = useState<File | null>(null);
 
   const filteredFiles = useFilteredFiles(files ?? undefined, searchTerm);
   const groupedFiles = useGroupedFiles(filteredFiles, grouping);
@@ -58,6 +61,14 @@ const FilesTab = ({ poolId }: { poolId: number }) => {
     setPreviewContentType("");
   }, [previewUrl]);
 
+  const handleDetails = useCallback((file: File) => {
+    setSelectedFileForDetails(file);
+  }, []);
+
+  const closeDetails = useCallback(() => {
+    setSelectedFileForDetails(null);
+  }, []);
+
   if (loading) {
     return (
       <div className="files-tab__loading">
@@ -67,7 +78,7 @@ const FilesTab = ({ poolId }: { poolId: number }) => {
     );
   }
 
-  if (error || !files) {
+  if (error) {
     return <div className="files-tab__error">Erreur lors du chargement des fichiers</div>;
   }
 
@@ -86,6 +97,7 @@ const FilesTab = ({ poolId }: { poolId: number }) => {
           groups={groupedFiles}
           onPreview={handlePreview}
           onDownload={handleDownload}
+          onDetails={handleDetails}
           previewingId={previewing}
           downloadingId={downloading}
         />
@@ -104,6 +116,10 @@ const FilesTab = ({ poolId }: { poolId: number }) => {
           url={previewUrl}
           onClose={closePreview}
         />
+      )}
+
+      {selectedFileForDetails && (
+        <DetailsModal file={selectedFileForDetails} onClose={closeDetails} />
       )}
     </div>
   );

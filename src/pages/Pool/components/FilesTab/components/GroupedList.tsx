@@ -5,11 +5,12 @@ type Props = {
   groups: Record<string, File[]>;
   onPreview: (id: number, name: string) => void;
   onDownload: (id: number, name: string) => void;
+  onDetails: (file: File) => void;
   previewingId: number | null;
   downloadingId: number | null;
 };
 
-export const GroupedList = ({ groups, onPreview, onDownload, previewingId, downloadingId }: Props) => {
+export const GroupedList = ({ groups, onPreview, onDownload, onDetails, previewingId, downloadingId }: Props) => {
   return (
     <>
       {Object.entries(groups).map(([groupName, groupFiles]) => (
@@ -25,6 +26,7 @@ export const GroupedList = ({ groups, onPreview, onDownload, previewingId, downl
                 file={f}
                 onPreview={onPreview}
                 onDownload={onDownload}
+                onDetails={onDetails}
                 isPreviewing={previewingId === f.id}
                 isDownloading={downloadingId === f.id}
               />
