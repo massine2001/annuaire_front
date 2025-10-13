@@ -7,10 +7,28 @@ export interface User {
   createdAt?: string;
 }
 
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
 export interface Pool {
   id: number;
   name: string;
   description?: string;
+  createdBy?: number;
   createdAt?: string;
 }
 

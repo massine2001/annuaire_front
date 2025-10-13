@@ -1,12 +1,39 @@
-import React, { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useFetch } from "../../../../hooks/useFetch";
 import { fetchPoolStats } from "../../../../api/poolPageApi";
+import { useToast } from "../../../../hooks/useToast";
+import { Toast } from "../../../../components/Toast";
+import { useAuth } from "../../../../hooks/useAuth";
 import type { PoolStats } from "../../../../types/models";
+import EditPoolModal from "./components/EditPoolModal";
+import DeletePoolModal from "./components/DeletePoolModal";
 import "./style.css";
 
-const InfoTab = ({ poolId }: { poolId: number }) => {
+const InfoTab = ({ poolId, onPoolDeleted, onPoolUpdated }: { poolId: number; onPoolDeleted?: () => void; onPoolUpdated?: () => void }) => {
   const fetcher = useCallback(() => fetchPoolStats(poolId), [poolId]);
-  const { data: stats, loading, error } = useFetch<PoolStats>(fetcher);
+  const { data: stats, loading, error, refetch } = useFetch<PoolStats>(fetcher);
+  const { toast, hideToast } = useToast();
+  const { user } = useAuth();
+  
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  
+  const userAccess = stats?.accesses.find(access => access.user.id === user?.id);
+  const canEdit = userAccess?.role === "admin" || userAccess?.role === "owner";
+  const canDelete = userAccess?.role === "admin" || userAccess?.role === "owner";
+
+  const handleEditSuccess = () => {
+    refetch();
+    if (onPoolUpdated) {
+      onPoolUpdated();
+    }
+  };
+
+  const handleDeleteSuccess = () => {
+    if (onPoolDeleted) {
+      onPoolDeleted();
+    }
+  };
 
   if (loading) {
     return (
@@ -38,6 +65,27 @@ const InfoTab = ({ poolId }: { poolId: number }) => {
 
   return (
     <div className="info-tab">
+      {(canEdit || canDelete) && (
+        <div className="info-tab__actions">
+          {canEdit && (
+            <button
+              className="info-tab__action-button info-tab__action-button--edit"
+              onClick={() => setIsEditModalOpen(true)}
+            >
+              Modifier
+            </button>
+          )}
+          {canDelete && (
+            <button
+              className="info-tab__action-button info-tab__action-button--delete"
+              onClick={() => setIsDeleteModalOpen(true)}
+            >
+              Supprimer
+            </button>
+          )}
+        </div>
+      )}
+
       <div className="info-tab__quick-stats">
         <div className="info-tab__stat">
           <span className="info-tab__stat-value">{stats.membersCount}</span>
@@ -96,7 +144,7 @@ const InfoTab = ({ poolId }: { poolId: number }) => {
           <section className="info-tab__section">
             <h3 className="info-tab__section-title">Meilleurs contributeurs</h3>
             <div className="info-tab__compact-list">
-              {stats.topUploaders.slice(0, 3).map((entry, idx) => (
+              {stats.topUploaders.slice(0, 3).map((entry) => (
                 <div key={entry.user?.id} className="info-tab__compact-item">
                   <span>{entry.user?.firstName} {entry.user?.lastName}</span>
                   <strong>{entry.count} fichier{entry.count > 1 ? 's' : ''}</strong>
@@ -189,6 +237,32 @@ const InfoTab = ({ poolId }: { poolId: number }) => {
           )}
         </div>
       </section>
+
+      {stats && (
+        <>
+          <EditPoolModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            pool={stats.pool}
+            onSuccess={handleEditSuccess}
+          />
+
+          <DeletePoolModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            pool={stats.pool}
+            onSuccess={handleDeleteSuccess}
+          />
+        </>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
+      )}
     </div>
   );
 };

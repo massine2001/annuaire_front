@@ -64,7 +64,7 @@ const ModifyDocument = ({ poolId }: Props) => {
             showSuccess("Document modifié avec succès");
             const timer = setTimeout(() => {
                 setSelectedDocId(null);
-                setRefreshKey(prev => prev + 1); // Force le re-fetch
+                setRefreshKey(prev => prev + 1);
             }, 2000);
             
             return () => clearTimeout(timer);
@@ -125,7 +125,6 @@ const ModifyDocument = ({ poolId }: Props) => {
                 </>
             )}
 
-            {/* Toast notifications */}
             {toast && (
                 <Toast
                     message={toast.message}

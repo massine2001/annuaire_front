@@ -6,15 +6,13 @@ export const fetchAllFiles = () =>
 
 export const uploadFile = (
   file: globalThis.File, 
-  poolId: number, 
-  userId: number,
+  poolId: number,
   description?: string,
   expirationDate?: string
 ) => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('poolId', poolId.toString());
-  formData.append('userId', userId.toString());
   if (description) formData.append('description', description);
   if (expirationDate) formData.append('expirationDate', expirationDate);
   

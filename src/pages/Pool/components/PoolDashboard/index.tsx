@@ -11,7 +11,7 @@ import InvitationTab from "../invitation";
 
 type TabType = "info" | "members" | "invitations" | "documents" | "edit";
 
-const PoolDashboard = ({ pool }: { pool: Pool | null }) => {
+const PoolDashboard = ({ pool, onPoolDeleted, onPoolUpdated }: { pool: Pool | null; onPoolDeleted?: () => void; onPoolUpdated?: () => void }) => {
   const [activeTab, setActiveTab] = useState<TabType>("documents");
 
   if (!pool) {
@@ -59,7 +59,7 @@ const PoolDashboard = ({ pool }: { pool: Pool | null }) => {
       </nav>
 
       <div className="pool-dashboard__content">
-        {activeTab === "info" && <InfoTab poolId={pool.id} />}
+        {activeTab === "info" && <InfoTab poolId={pool.id} onPoolDeleted={onPoolDeleted} onPoolUpdated={onPoolUpdated} />}
         {activeTab === "documents" && <FilesTab poolId={pool.id} />}
         {activeTab === "edit" && <FileEditionTab poolId={pool.id} />}
         {activeTab === "members" && <MembersTab poolId={pool.id} />}

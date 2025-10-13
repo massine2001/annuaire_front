@@ -17,7 +17,6 @@ const AddDocument = ({ poolId }: Props) => {
         (data: DocumentFormData) => uploadFile(
             data.file!,
             poolId,
-            1, // TODO: Get userId from auth context
             data.description,
             data.expirationDate
         )
@@ -28,7 +27,6 @@ const AddDocument = ({ poolId }: Props) => {
         await execute(data);
     };
 
-    // Notifications
     useEffect(() => {
         if (success) {
             showSuccess("Document ajouté avec succès");
@@ -54,7 +52,6 @@ const AddDocument = ({ poolId }: Props) => {
                 error={error}
             />
 
-            {/* Toast notifications */}
             {toast && (
                 <Toast
                     message={toast.message}

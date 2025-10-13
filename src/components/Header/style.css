@@ -1,10 +1,13 @@
 .navbar {
     width: auto;
     display: flex;
-    justify-content: space-around;
+    align-items: center;
+    justify-content: space-between;
     border-bottom: 1px black solid;
     background-color: rgb(234, 234, 234);
     border-radius: 8px 8px 0 0;
+    padding: 0 1rem;
+    gap: 1rem;
 }
 
 .navbar a {
@@ -26,4 +29,38 @@
 .navbar a.active {
   color: #0056b3;
   text-decoration: underline;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.navbar-user {
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.navbar-logout {
+  padding: 0.4rem 0.8rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.navbar-logout:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.navbar-logout:active {
+  transform: translateY(0);
 }

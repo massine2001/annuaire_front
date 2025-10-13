@@ -1,26 +1,55 @@
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { DataList } from "../../components/DataList";
-import { fetchAllPools } from "../../api/poolPageApi";
+import { fetchPoolsByUserId } from "../../api/poolPageApi";
 import { useFetch } from "../../hooks/useFetch";
+import { useAuth } from "../../hooks/useAuth";
+import { useToast } from "../../hooks/useToast";
+import { Toast } from "../../components/Toast";
 import type { Pool } from "../../types/models";
 import PoolDashboard from "./components/PoolDashboard";
+import CreatePoolModal from "../Home/components/CreatePoolModal";
 import './style.css'
 import { useMediaQuery } from "../../hooks/useMediaQuery";
+
 const PoolPage = () => {
-  const fetcher = useCallback(() => fetchAllPools(), []);
-  const { data: pools = [], loading, error } = useFetch<Pool[]>(fetcher);
+  const { user } = useAuth();
+  const fetcher = useCallback(() => {
+    if (!user?.id) return Promise.resolve([]);
+    return fetchPoolsByUserId(user.id);
+  }, [user?.id]);
+  const { data: pools = [], loading, error, refetch } = useFetch<Pool[]>(fetcher);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const { toast, hideToast } = useToast();
+
+  useEffect(() => {
+    if (user?.id) {
+      refetch();
+    }
+  }, [user?.id, refetch]);
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  
+  const poolsArray = Array.isArray(pools) ? pools : [];
+  
   const selectedPool: Pool | null = useMemo(
-    () => (pools ?? []).find(p => p.id === selectedId) ?? null,
-    [pools, selectedId]
+    () => poolsArray.find(p => p.id === selectedId) ?? null,
+    [poolsArray, selectedId]
   );
+
+  const handlePoolDeleted = () => {
+    setSelectedId(null);
+    refetch();
+  };
+
+  const handleCreateSuccess = () => {
+    refetch();
+  };
 
   return (
     <div className={isDesktop ? 'dcontainer' : 'mcontainer'}>
       <DataList
-        items={pools}
+        items={poolsArray}
         loading={loading}
         error={error}
         selectedId={selectedId}
@@ -29,12 +58,26 @@ const PoolPage = () => {
           title: "Liste des Pools",
           searchPlaceholder: "Rechercher une pool...",
           actionButtonText: "Créer une Pool",
-          onActionClick: () => console.log("Créer une nouvelle pool"),
+          onActionClick: () => setIsCreateModalOpen(true),
           getSearchText: (pool) => pool.name,
           getDisplayText: (pool) => pool.name,
         }}
       />
-      <PoolDashboard pool={selectedPool} />
+      <PoolDashboard pool={selectedPool} onPoolDeleted={handlePoolDeleted} onPoolUpdated={refetch} />
+
+      <CreatePoolModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={handleCreateSuccess}
+      />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
+      )}
     </div>
   )
 }

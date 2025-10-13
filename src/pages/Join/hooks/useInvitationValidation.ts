@@ -24,10 +24,10 @@ export const useInvitationValidation = (token: string | null) => {
       }
 
       try {
-        // TODO: Remplacer par l'appel API réel
+        // TODO: Remplacer par l'appel API apres
         // const result = await validateInvitationToken(token);
         
-        // Pour l'instant, décoder le token en base64
+        // Pour l'instant décder le token en base64
         const decoded = atob(token);
         const [poolId, invitedEmail] = decoded.split(":");
         

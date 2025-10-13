@@ -38,15 +38,14 @@ const DeleteDocument = ({ poolId }: Props) => {
         reset();
     };
     
-    // Réinitialiser la sélection après succès
     useEffect(() => {
         if (success) {
             showSuccess("Document supprimé avec succès");
             const timer = setTimeout(() => {
                 setSelectedDocId(null);
                 setShowConfirmation(false);
-                setRefreshKey(prev => prev + 1); // Force le re-fetch
-            }, 2000); // Attendre 2 secondes pour que l'utilisateur voie le message de succès
+                setRefreshKey(prev => prev + 1);
+            }, 2000); 
             
             return () => clearTimeout(timer);
         }
@@ -165,7 +164,6 @@ const DeleteDocument = ({ poolId }: Props) => {
                 </div>
             )}
 
-            {/* Toast notifications */}
             {toast && (
                 <Toast
                     message={toast.message}

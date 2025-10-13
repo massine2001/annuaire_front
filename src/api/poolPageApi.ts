@@ -7,14 +7,34 @@ export const fetchAllPools = () =>
 export const fetchPoolById = (id: number) =>
   axiosClient.get<Pool>(`/pool/${id}`).then(res => res.data);
 
-export const createPool = (pool: Omit<Pool, 'id' | 'createdAt'>) =>
+export const createPool = (pool: Omit<Pool, 'id' | 'createdAt'> & { createdBy: number }) =>
   axiosClient.post<Pool>('/pool/', pool).then(res => res.data);
+
+export const updatePool = (id: number, pool: Partial<Pool>) =>
+  axiosClient.put<Pool>(`/pool/${id}`, pool).then(res => res.data);
+
+export const deletePool = (id: number) =>
+  axiosClient.delete(`/pool/${id}`).then(res => res.status === 204 ? null : res.data);
 
 export const fetchUsersFromPool = (poolId: number) =>
   axiosClient.get<User[]>(`/pool/users/${poolId}`).then(res => res.data);
 
 export const fetchPoolsByUserId = (userId: number) =>
-  axiosClient.get<Pool[]>(`/pool/user/${userId}`).then(res => res.data);
+  axiosClient.get<Pool[]>(`/pool/user/${userId}`)
+    .then(res => {
+      if (!Array.isArray(res.data)) {
+        return [];
+      }
+      return res.data;
+    })
+    .catch(error => {
+      if (error.response?.status === 403 || error.response?.status === 404) {
+        console.warn(`Access denied or pools not found for the user`);
+      } else {
+        console.error(`Error fetching pools for the user :`, error.message);
+      }
+      return [];
+    });
 
 export const fetchPoolStats = (poolId: number) =>
   axiosClient.get<PoolStats>(`/pool/stats/${poolId}`).then(res => res.data);
@@ -22,7 +42,6 @@ export const fetchPoolStats = (poolId: number) =>
 export const fetchFilesByPoolId = (poolId: number) =>
   axiosClient.get<File[]>(`/pool/files/${poolId}`).then(res => res.data);
 
-// Gestion des membres via Access
 export const addMemberToPool = (poolId: number, userId: number, role: string, permission: string = 'READ_WRITE') => {
   const pool = { id: poolId };
   const user = { id: userId };
@@ -34,7 +53,5 @@ export const removeMemberFromPool = (accessId: number) => {
 };
 
 export const updateMemberRole = (accessId: number, newRole: string, newPermission?: string) => {
-  // Il faut passer l'objet Access complet avec pool et user
-  // On va juste passer le role pour le moment, à ajuster selon le backend
   return axiosClient.put(`/access/${accessId}`, { role: newRole, permission: newPermission || 'READ_WRITE' });
 };

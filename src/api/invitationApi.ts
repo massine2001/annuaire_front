@@ -1,6 +1,5 @@
 import axiosClient from "./axiosClient";
 
-// Types
 export type InvitationData = {
   email: string;
   poolId: number;
@@ -13,11 +12,6 @@ export type InvitationResponse = {
   message: string;
 };
 
-/**
- * Envoyer une invitation par email
- * TODO: À implémenter côté backend
- * Pour l'instant, cette fonction est un placeholder
- */
 export const sendInvitation = async (data: InvitationData): Promise<InvitationResponse> => {
   try {
     const response = await axiosClient.post("/api/invitations/send", data);
@@ -28,10 +22,7 @@ export const sendInvitation = async (data: InvitationData): Promise<InvitationRe
   }
 };
 
-/**
- * Envoyer plusieurs invitations
- * TODO: À implémenter côté backend
- */
+
 export const sendBulkInvitations = async (invitations: InvitationData[]): Promise<InvitationResponse> => {
   try {
     const response = await axiosClient.post("/api/invitations/send-bulk", { invitations });
@@ -42,10 +33,7 @@ export const sendBulkInvitations = async (invitations: InvitationData[]): Promis
   }
 };
 
-/**
- * Valider un token d'invitation et récupérer les informations
- * TODO: À implémenter côté backend
- */
+
 export const validateInvitationToken = async (token: string): Promise<{
   valid: boolean;
   poolId?: number;
@@ -61,10 +49,7 @@ export const validateInvitationToken = async (token: string): Promise<{
   }
 };
 
-/**
- * Accepter une invitation et créer un compte utilisateur
- * TODO: À implémenter côté backend
- */
+
 export const acceptInvitation = async (data: {
   token: string;
   firstName: string;
@@ -85,10 +70,7 @@ export const acceptInvitation = async (data: {
   }
 };
 
-/**
- * Obtenir la liste des invitations envoyées pour une pool
- * TODO: À implémenter côté backend
- */
+
 export const getPoolInvitations = async (poolId: number): Promise<{
   email: string;
   sentAt: string;

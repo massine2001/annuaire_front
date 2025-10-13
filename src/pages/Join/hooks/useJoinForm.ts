@@ -19,20 +19,17 @@ export const useJoinForm = (token: string) => {
     setSubmitting(true);
 
     try {
-      // TODO: Appeler l'API backend pour créer le compte et ajouter à la pool
+      // TODO: Implémenter l'API backend pour accepter l'invitation
       // const result = await acceptInvitation({
-      //   token: token,
+      //   token,
       //   firstName: formData.firstName,
       //   lastName: formData.lastName,
       //   password: formData.password,
       //   phone: formData.phone || undefined,
       // });
 
-      // Simuler un délai
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      console.log("Token:", token);
-      console.log("Form data:", formData);
 
       showSuccess("Compte créé avec succès ! Bienvenue dans la pool !");
       
