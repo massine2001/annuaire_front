@@ -61,7 +61,6 @@ export const downloadFile = async (fileId: number, fileName: string) => {
     
     return { success: true };
   } catch (error) {
-    console.error('Erreur lors du téléchargement:', error);
     return { success: false, error };
   }
 };
@@ -79,7 +78,6 @@ export const previewFile = async (fileId: number) => {
     
     return { success: true, url, contentType };
   } catch (error) {
-    console.error('Erreur lors de la prévisualisation:', error);
     return { success: false, error };
   }
 };

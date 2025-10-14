@@ -48,7 +48,6 @@ export interface Access {
   user: User;
   pool: Pool;
   role: string;
-  permission: string;
 }
 
 export interface PoolStats {

@@ -35,7 +35,6 @@ const Home = () => {
     try {
       const userPools = await fetchPoolsByUserId(user.id);
       if (!Array.isArray(userPools)) {
-        console.error("❌ userPools is not an array:", userPools);
         setPools([]);
         return;
       }
@@ -53,7 +52,6 @@ const Home = () => {
               )?.role || "member",
             };
           } catch (error) {
-            console.error(`Error fetching stats for pool ${pool.id}:`, error);
             return {
               ...pool,
               memberCount: 0,
@@ -66,7 +64,6 @@ const Home = () => {
 
       setPools(poolsWithStats);
     } catch (error) {
-      console.error("Error loading pools:", error);
       setPools([]);
     } finally {
       setLoading(false);

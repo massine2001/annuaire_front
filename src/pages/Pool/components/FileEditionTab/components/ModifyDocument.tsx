@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import DocumentSelector from "./DocumentSelector";
 import DocumentForm, { type DocumentFormData } from "./DocumentForm";
 import { useFetch } from "../../../../../hooks/useFetch";
@@ -16,11 +16,14 @@ type Props = {
 const ModifyDocument = ({ poolId }: Props) => {
     const { toast, showSuccess, showError, hideToast } = useToast();
     
-    const [refreshKey, setRefreshKey] = useState(0);
-    const fetcher = useCallback(() => fetchFilesByPoolId(poolId), [poolId, refreshKey]);
-    const { data: documents, loading: loadingDocs } = useFetch(fetcher);
+    const fetcher = useCallback(() => fetchFilesByPoolId(poolId), [poolId]);
+    const { data: rawDocuments, loading: loadingDocs, refetch } = useFetch(fetcher);
+    
+    const documents = Array.isArray(rawDocuments) ? rawDocuments : [];
     
     const [selectedDocId, setSelectedDocId] = useState<number | null>(null);
+    
+    const selectedDoc = documents.find(d => d.id === selectedDocId);
     
     const { execute, loading, success, error } = useMutation(
         (data: DocumentFormData) => {
@@ -41,8 +44,20 @@ const ModifyDocument = ({ poolId }: Props) => {
             );
         }
     );
-
-    const selectedDoc = documents?.find(d => d.id === selectedDocId);
+    
+    const successHandledRef = useRef(false);
+    
+    const showSuccessRef = useRef(showSuccess);
+    const showErrorRef = useRef(showError);
+    const refetchRef = useRef(refetch);
+    const hideToastRef = useRef(hideToast);
+    
+    useEffect(() => {
+        showSuccessRef.current = showSuccess;
+        showErrorRef.current = showError;
+        refetchRef.current = refetch;
+        hideToastRef.current = hideToast;
+    });
     
     const getNameWithoutExtension = (fullName: string) => {
         const lastDotIndex = fullName.lastIndexOf('.');
@@ -60,11 +75,15 @@ const ModifyDocument = ({ poolId }: Props) => {
     };
     
     useEffect(() => {
-        if (success) {
-            showSuccess("Document modifié avec succès");
+        if (success && !successHandledRef.current) {
+            successHandledRef.current = true;
+            showSuccessRef.current("Document modifié avec succès");
+            
             const timer = setTimeout(() => {
                 setSelectedDocId(null);
-                setRefreshKey(prev => prev + 1);
+                refetchRef.current();
+                hideToastRef.current();
+                successHandledRef.current = false;
             }, 2000);
             
             return () => clearTimeout(timer);
@@ -73,7 +92,7 @@ const ModifyDocument = ({ poolId }: Props) => {
 
     useEffect(() => {
         if (error) {
-            showError("Erreur lors de la modification du document");
+            showErrorRef.current("Erreur lors de la modification du document");
         }
     }, [error]);
 
@@ -85,7 +104,7 @@ const ModifyDocument = ({ poolId }: Props) => {
         <div className="document-form_wrapper">
            
             <DocumentSelector
-                documents={documents ?? []}
+                documents={documents}
                 selectedId={selectedDocId}
                 onChange={setSelectedDocId}
                 placeholder="Sélectionner un document à modifier"

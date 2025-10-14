@@ -29,9 +29,6 @@ export const fetchPoolsByUserId = (userId: number) =>
     })
     .catch(error => {
       if (error.response?.status === 403 || error.response?.status === 404) {
-        console.warn(`Access denied or pools not found for the user`);
-      } else {
-        console.error(`Error fetching pools for the user :`, error.message);
       }
       return [];
     });
@@ -42,16 +39,51 @@ export const fetchPoolStats = (poolId: number) =>
 export const fetchFilesByPoolId = (poolId: number) =>
   axiosClient.get<File[]>(`/pool/files/${poolId}`).then(res => res.data);
 
-export const addMemberToPool = (poolId: number, userId: number, role: string, permission: string = 'READ_WRITE') => {
+export const addMemberToPool = (poolId: number, userId: number, role: string) => {
   const pool = { id: poolId };
   const user = { id: userId };
-  return axiosClient.post<Access>('/access/', { pool, user, role, permission });
+  return axiosClient.post<Access>('/access/', { pool, user, role });
 };
 
 export const removeMemberFromPool = (accessId: number) => {
   return axiosClient.delete(`/access/${accessId}`);
 };
 
-export const updateMemberRole = (accessId: number, newRole: string, newPermission?: string) => {
-  return axiosClient.put(`/access/${accessId}`, { role: newRole, permission: newPermission || 'READ_WRITE' });
+export const updateMemberRole = (accessId: number, newRole: string) => {
+  return axiosClient.put(`/access/${accessId}`, { role: newRole });
 };
+
+export const generateInvitationToken = (poolId: number, email: string) =>
+  axiosClient.post<{ success: boolean; token: string; expiresAt: string }>(
+    '/pool/invitations/generate-token',
+    { poolId, email }
+  ).then(res => res.data);
+
+export const validateInvitationToken = (token: string) =>
+  axiosClient.get<{
+    valid: boolean;
+    email?: string;
+    poolId?: number;
+    poolName?: string;
+    expiresAt?: string;
+    message?: string;
+  }>(`/pool/invitations/validate/${token}`).then(res => res.data);
+
+export const acceptInvitation = (data: {
+  token: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  phone?: string;
+}) =>
+  axiosClient.post<{
+    success: boolean;
+    message: string;
+    user?: {
+      id: number;
+      email: string;
+      firstName: string;
+      lastName: string;
+    };
+  }>('/pool/invitations/accept', data).then(res => res.data);

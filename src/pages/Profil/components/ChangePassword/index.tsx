@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useToast } from "../../../../hooks/useToast";
 import { changePassword } from "../../../../api/profilPageApi";
+import PasswordStrengthIndicator from "../../../../components/PasswordStrengthIndicator/PasswordStrengthIndicator";
+import { validatePassword } from "../../../../utils/passwordValidation";
 import './style.css';
 
 const ChangePassword = () => {
@@ -48,9 +50,12 @@ const ChangePassword = () => {
     if (!formData.newPassword) {
       newErrors.newPassword = "Le nouveau mot de passe est requis";
       isValid = false;
-    } else if (formData.newPassword.length < 8) {
-      newErrors.newPassword = "Le mot de passe doit contenir au moins 8 caractères";
-      isValid = false;
+    } else {
+      const passwordValidation = validatePassword(formData.newPassword);
+      if (!passwordValidation.isValid) {
+        newErrors.newPassword = passwordValidation.errors[0] || "Mot de passe trop faible";
+        isValid = false;
+      }
     }
 
     if (!formData.confirmPassword) {
@@ -93,8 +98,6 @@ const ChangePassword = () => {
         confirmPassword: "",
       });
     } catch (error: any) {
-      console.error("Error changing password:", error);
-      
       if (error.response?.status === 401) {
         setErrors({
           ...errors,
@@ -155,6 +158,10 @@ const ChangePassword = () => {
           {errors.newPassword && (
             <span className="error-message">{errors.newPassword}</span>
           )}
+          <PasswordStrengthIndicator 
+            password={formData.newPassword} 
+            showRequirements={true}
+          />
         </div>
 
         <div className="form-group">

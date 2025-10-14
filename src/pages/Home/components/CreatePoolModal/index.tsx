@@ -68,7 +68,6 @@ const CreatePoolModal = ({ isOpen, onClose, onSuccess }: CreatePoolModalProps) =
       onClose();
     } catch (error) {
       showError("Erreur lors de la création de la pool");
-      console.error(error);
     } finally {
       setSubmitting(false);
     }

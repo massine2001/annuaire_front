@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { FormEvent } from "react";
 import '../style.css';
 
@@ -33,6 +33,7 @@ const DocumentForm = ({
     const [expirationDate, setExpirationDate] = useState(initialData?.expirationDate ?? "");
     const [file, setFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const prevSuccessRef = useRef(false);
 
     const initialForm = () => {
         setName("");
@@ -62,9 +63,12 @@ const DocumentForm = ({
         });
     };
 
-    if (success && (name || description || expirationDate || file)) {
-        initialForm();
-    }
+    useEffect(() => {
+        if (success && !prevSuccessRef.current && !isEdit) {
+            initialForm();
+        }
+        prevSuccessRef.current = success;
+    }, [success, isEdit]);
 
     const displayError = error || externalError;
 

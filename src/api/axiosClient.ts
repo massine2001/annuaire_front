@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { getToken } from '../utils/storage';
 
 const axiosClient = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8082/api',
@@ -7,20 +6,9 @@ const axiosClient = axios.create({
         'Content-Type': 'application/json',
     },
     timeout: Number(import.meta.env.VITE_API_TIMEOUT) || 10000,
+    withCredentials: true, 
 })
 
-axiosClient.interceptors.request.use(
-    (config) => {
-        const token = getToken();
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
 
 axiosClient.interceptors.response.use(
     (response) => response,

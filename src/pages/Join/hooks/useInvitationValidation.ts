@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useToast } from "../../../hooks/useToast";
+import { validateInvitationToken } from "../../../api/poolPageApi";
 
 type InvitationData = {
   poolName: string;
@@ -24,18 +25,18 @@ export const useInvitationValidation = (token: string | null) => {
       }
 
       try {
-        // TODO: Remplacer par l'appel API apres
-        // const result = await validateInvitationToken(token);
+        const result = await validateInvitationToken(token);
         
-        // Pour l'instant décder le token en base64
-        const decoded = atob(token);
-        const [poolId, invitedEmail] = decoded.split(":");
-        
-        setInvitationValid(true);
-        setInvitationData({
-          poolName: `Pool #${poolId}`, // TODO: Récupérer le vrai nom de la pool
-          email: invitedEmail,
-        });
+        if (result.valid && result.poolName && result.email) {
+          setInvitationValid(true);
+          setInvitationData({
+            poolName: result.poolName,
+            email: result.email,
+          });
+        } else {
+          setInvitationValid(false);
+          showError(result.message || "Lien d'invitation invalide");
+        }
       } catch (error) {
         setInvitationValid(false);
         showError("Lien d'invitation invalide ou expiré");

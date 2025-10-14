@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import DocumentSelector from "./DocumentSelector";
 import { useFetch } from "../../../../../hooks/useFetch";
 import { useMutation } from "../../../../../hooks/useMutation";
@@ -15,18 +15,36 @@ type Props = {
 const DeleteDocument = ({ poolId }: Props) => {
     const { toast, showSuccess, showError, hideToast } = useToast();
     
-    const [refreshKey, setRefreshKey] = useState(0);
-    const fetcher = useCallback(() => fetchFilesByPoolId(poolId), [poolId, refreshKey]);
-    const { data: documents, loading: loadingDocs } = useFetch(fetcher);
+    const fetcher = useCallback(() => fetchFilesByPoolId(poolId), [poolId]);
+    const { data: rawDocuments, loading: loadingDocs, refetch } = useFetch(fetcher);
+    
+    const documents = Array.isArray(rawDocuments) ? rawDocuments : [];
     
     const [selectedDocId, setSelectedDocId] = useState<number | null>(null);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [docToDelete, setDocToDelete] = useState<any>(null);
     
     const { execute, loading, success, error, reset } = useMutation(
         () => deleteFile(selectedDocId!)
     );
 
-    const selectedDoc = documents?.find(d => d.id === selectedDocId);
+    const successHandledRef = useRef(false);
+    
+    const showSuccessRef = useRef(showSuccess);
+    const showErrorRef = useRef(showError);
+    const resetRef = useRef(reset);
+    const refetchRef = useRef(refetch);
+    const hideToastRef = useRef(hideToast);
+    
+    useEffect(() => {
+        showSuccessRef.current = showSuccess;
+        showErrorRef.current = showError;
+        resetRef.current = reset;
+        refetchRef.current = refetch;
+        hideToastRef.current = hideToast;
+    });
+
+    const selectedDoc = documents.find(d => d.id === selectedDocId);
 
     const handleDelete = async () => {
         if (!selectedDocId) return;
@@ -35,25 +53,45 @@ const DeleteDocument = ({ poolId }: Props) => {
 
     const handleCancel = () => {
         setShowConfirmation(false);
+        setDocToDelete(null);
         reset();
     };
     
+    const handleShowConfirmation = () => {
+        if (selectedDoc) {
+            setDocToDelete(selectedDoc);
+            setShowConfirmation(true);
+        }
+    };
+    
     useEffect(() => {
-        if (success) {
-            showSuccess("Document supprimé avec succès");
-            const timer = setTimeout(() => {
-                setSelectedDocId(null);
-                setShowConfirmation(false);
-                setRefreshKey(prev => prev + 1);
-            }, 2000); 
+        if (success && !successHandledRef.current) {
+            successHandledRef.current = true;
+            showSuccessRef.current("Document supprimé avec succès");
             
-            return () => clearTimeout(timer);
+            const closeTimer = setTimeout(() => {
+                setShowConfirmation(false);
+                setDocToDelete(null);
+                setSelectedDocId(null);
+            }, 2000);
+            
+            const cleanupTimer = setTimeout(() => {
+                resetRef.current();
+                refetchRef.current();
+                hideToastRef.current();
+                successHandledRef.current = false;
+            }, 2500);
+            
+            return () => {
+                clearTimeout(closeTimer);
+                clearTimeout(cleanupTimer);
+            };
         }
     }, [success]);
 
     useEffect(() => {
         if (error) {
-            showError("Erreur lors de la suppression du document");
+            showErrorRef.current("Erreur lors de la suppression du document");
         }
     }, [error]);
 
@@ -65,7 +103,7 @@ const DeleteDocument = ({ poolId }: Props) => {
         <div className="document-form_wrapper">
            
             <DocumentSelector
-                documents={documents ?? []}
+                documents={documents}
                 selectedId={selectedDocId}
                 onChange={setSelectedDocId}
                 placeholder="Sélectionner un document à supprimer"
@@ -105,7 +143,7 @@ const DeleteDocument = ({ poolId }: Props) => {
                         </button>
                         <button 
                             type="button"
-                            onClick={() => setShowConfirmation(true)}
+                            onClick={handleShowConfirmation}
                             className="delete-document__btn-danger"
                         >
                             Supprimer
@@ -114,11 +152,11 @@ const DeleteDocument = ({ poolId }: Props) => {
                 </div>
             )}
 
-            {showConfirmation && selectedDoc && (
+            {showConfirmation && docToDelete && (
                 <div className="delete-document__confirmation">
                     <h3>⚠️ Confirmation de suppression</h3>
                     <p>
-                        Êtes-vous sûr de vouloir supprimer le document <strong>"{selectedDoc.name}"</strong> ?
+                        Êtes-vous sûr de vouloir supprimer le document <strong>"{docToDelete.name}"</strong> ?
                     </p>
                     <p className="delete-document__warning">
                         Cette action est irréversible.

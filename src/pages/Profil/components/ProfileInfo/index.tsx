@@ -39,7 +39,6 @@ const ProfileInfo = ({ user }: ProfileInfoProps) => {
         window.location.reload();
       }, 1500);
     } catch (error) {
-      console.error("Error updating profile:", error);
       showError("Erreur lors de la mise à jour du profil");
     } finally {
       setLoading(false);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 type FormData = {
+  email: string;
   firstName: string;
   lastName: string;
   password: string;
@@ -17,6 +18,7 @@ type Props = {
 
 const JoinForm = ({ poolName, email, onSubmit, submitting }: Props) => {
   const [formData, setFormData] = useState<FormData>({
+    email,
     firstName: "",
     lastName: "",
     password: "",

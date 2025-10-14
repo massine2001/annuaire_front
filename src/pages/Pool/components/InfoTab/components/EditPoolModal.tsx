@@ -76,7 +76,6 @@ const EditPoolModal = ({ isOpen, onClose, pool, onSuccess }: EditPoolModalProps)
       onClose();
     } catch (error) {
       showError("Erreur lors de la modification de la pool");
-      console.error(error);
     } finally {
       setSubmitting(false);
     }

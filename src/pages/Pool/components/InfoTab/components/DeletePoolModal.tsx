@@ -32,7 +32,6 @@ const DeletePoolModal = ({ isOpen, onClose, pool, onSuccess }: DeletePoolModalPr
       onClose();
     } catch (error) {
       showError("Erreur lors de la suppression de la pool");
-      console.error(error);
     } finally {
       setDeleting(false);
     }

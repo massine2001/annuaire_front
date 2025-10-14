@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../hooks/useToast';
 import { Toast } from '../../components/Toast';
+import PasswordStrengthIndicator from '../../components/PasswordStrengthIndicator/PasswordStrengthIndicator';
+import { validatePassword } from '../../utils/passwordValidation';
 import './style.css';
 
 const RegisterPage = () => {
@@ -27,8 +29,9 @@ const RegisterPage = () => {
       return;
     }
 
-    if (formData.password.length < 6) {
-      showError('Le mot de passe doit contenir au moins 6 caractères');
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) {
+      showError(passwordValidation.errors[0] || 'Mot de passe trop faible');
       return;
     }
 
@@ -110,10 +113,12 @@ const RegisterPage = () => {
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               placeholder="••••••••"
               required
-              minLength={6}
               disabled={loading}
             />
-            <span className="form-helper">Au moins 6 caractères</span>
+            <PasswordStrengthIndicator 
+              password={formData.password} 
+              showRequirements={true}
+            />
           </div>
 
           <div className="form-group">

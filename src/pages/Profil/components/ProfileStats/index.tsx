@@ -41,7 +41,6 @@ const ProfileStats = ({ userId }: ProfileStatsProps) => {
               file => file.userUploader.id === userId
             ).length;
           } catch (error) {
-            console.error(`Error fetching files for pool ${pool.id}:`, error);
           }
         }
 
@@ -72,7 +71,6 @@ const ProfileStats = ({ userId }: ProfileStatsProps) => {
           recentActivity,
         });
       } catch (error) {
-        console.error("Error loading stats:", error);
       } finally {
         setLoading(false);
       }

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../../../hooks/useToast";
+import { acceptInvitation } from "../../../api/poolPageApi";
 
 type FormData = {
+  email: string;
   firstName: string;
   lastName: string;
   password: string;
@@ -19,27 +21,28 @@ export const useJoinForm = (token: string) => {
     setSubmitting(true);
 
     try {
-      // TODO: Implémenter l'API backend pour accepter l'invitation
-      // const result = await acceptInvitation({
-      //   token,
-      //   firstName: formData.firstName,
-      //   lastName: formData.lastName,
-      //   password: formData.password,
-      //   phone: formData.phone || undefined,
-      // });
+      const result = await acceptInvitation({
+        token,
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        password: formData.password,
+        phone: formData.phone || undefined,
+      });
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (result.success) {
+        showSuccess(result.message || "Compte créé avec succès ! Bienvenue !");
+        
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
+      } else {
+        showError(result.message || "Erreur lors de la création du compte");
+      }
       
-
-      showSuccess("Compte créé avec succès ! Bienvenue dans la pool !");
-      
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-      
-    } catch (error) {
-      showError("Erreur lors de la création du compte");
-      console.error(error);
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Erreur lors de la création du compte";
+      showError(errorMessage);
     } finally {
       setSubmitting(false);
     }

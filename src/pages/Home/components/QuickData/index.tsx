@@ -1,27 +1,37 @@
-import { useEffect, useState } from "react";
-import { fetchPoolsCount, fetchFilesCount, fetchUsersCount } from "../../../../api/homePageApi";
+import { useEffect, useState, useContext } from "react";
+import { fetchAllPools } from "../../../../api/poolPageApi";
+import { fetchAllFiles } from "../../../../api/filePageApi";
+import { AuthContext } from "../../../../contexts/AuthContext";
 import './style.css';
+
 interface FetchedData {
     pools: number | null,
-    users: number | null,
     files: number | null,
 }
 
 const QuickData: React.FC = () => {
+const authContext = useContext(AuthContext);
+const user = authContext?.user;
+
 const [fetchedData, setFetchedData] = useState<FetchedData>({
     pools: null,
-    users: null,
     files: null,
 });
 
 const fetchQuickData = async () => {
-    const [pools, users, files] = await Promise.all([
-        fetchPoolsCount(),
-        fetchUsersCount(),
-        fetchFilesCount(),
-    ])
+    try {
+        const [pools, files] = await Promise.all([
+            fetchAllPools(),
+            fetchAllFiles(),
+        ])
 
-    setFetchedData({pools, users, files})
+        setFetchedData({
+            pools: pools.length,
+            files: files.length,
+        })
+    } catch (error) {
+        setFetchedData({ pools: 0, files: 0 });
+    }
 }
 
 useEffect(() => {
@@ -30,34 +40,34 @@ useEffect(() => {
 
     return (
         <div className="quickData">
-    <h2>Statistiques rapides</h2>
+    <h2>Mes statistiques</h2>
     <div className="statsGrid">
         <div className="statCard">
-            <span className="icon">📊</span>
+            <span className="icon">👤</span>
             <div>
-                <p className="label">Pools</p>
-                <p className="value">{fetchedData.pools ?? '...'}</p>
+                <p className="label">Utilisateur</p>
+                <p className="value">{user?.firstName || '...'}</p>
             </div>
         </div>
         <div className="statCard">
-            <span className="icon">👥</span>
+            <span className="icon">🕳️</span>
             <div>
-                <p className="label">Utilisateurs</p>
-                <p className="value">{fetchedData.users ?? '...'}</p>
+                <p className="label">Mes Pools</p>
+                <p className="value">{fetchedData.pools ?? '...'}</p>
             </div>
         </div>
         <div className="statCard">
             <span className="icon">📁</span>
             <div>
-                <p className="label">Fichiers</p>
+                <p className="label">Mes Fichiers</p>
                 <p className="value">{fetchedData.files ?? '...'}</p>
             </div>
         </div>
         <div className="statCard">
-            <span className="icon">🟩</span>
+            <span className="icon">🟢</span>
             <div>
-                <p className="label">Personnes connectées</p>
-                <p className="value">{fetchedData.files ?? '...'}</p>
+                <p className="label">Statut</p>
+                <p className="value">Connecté</p>
             </div>
         </div>
     </div>

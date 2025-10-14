@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "../../../../hooks/useToast";
 import { Toast } from "../../../../components/Toast";
 import { DEFAULT_EMAIL_TEMPLATE, generateInvitationLink } from "./constants";
@@ -19,10 +19,20 @@ const InvitationTab = ({ poolId, poolName, currentUserName }: Props) => {
   const { toast, showSuccess, showError, hideToast } = useToast();
   
   const [emailList, setEmailList] = useState<string[]>([]);
-  const [emailMessage, setEmailMessage] = useState(
-    DEFAULT_EMAIL_TEMPLATE(poolName, currentUserName, "")
-  );
+  const [emailMessage, setEmailMessage] = useState("");
   const [showSendModal, setShowSendModal] = useState(false);
+
+  useEffect(() => {
+    const initTemplate = async () => {
+      try {
+        const sampleLink = await generateInvitationLink(poolId, "exemple@email.com");
+        setEmailMessage(DEFAULT_EMAIL_TEMPLATE(poolName, currentUserName, sampleLink));
+      } catch (error) {
+        setEmailMessage(DEFAULT_EMAIL_TEMPLATE(poolName, currentUserName, "https://..."));
+      }
+    };
+    initTemplate();
+  }, [poolId, poolName, currentUserName]);
 
   const { copyToClipboard, openGmail, openMailClient, downloadAsFile } = useSendInvitations({
     poolId,
@@ -46,10 +56,14 @@ const InvitationTab = ({ poolId, poolName, currentUserName }: Props) => {
     setEmailList(emailList.filter(e => e !== emailToRemove));
   };
 
-  const handleResetTemplate = () => {
-    const sampleLink = generateInvitationLink(poolId, "exemple@email.com");
-    setEmailMessage(DEFAULT_EMAIL_TEMPLATE(poolName, currentUserName, sampleLink));
-    showSuccess("Template réinitialisé");
+  const handleResetTemplate = async () => {
+    try {
+      const sampleLink = await generateInvitationLink(poolId, "exemple@email.com");
+      setEmailMessage(DEFAULT_EMAIL_TEMPLATE(poolName, currentUserName, sampleLink));
+      showSuccess("Template réinitialisé");
+    } catch (error) {
+      showError("Erreur lors de la réinitialisation du template");
+    }
   };
 
   const handleSendInvitations = () => {

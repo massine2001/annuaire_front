@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import DocumentForm, { type DocumentFormData } from "./DocumentForm";
 import { uploadFile } from "../../../../../api/filePageApi";
 import { useMutation } from "../../../../../hooks/useMutation";
@@ -21,6 +21,18 @@ const AddDocument = ({ poolId }: Props) => {
             data.expirationDate
         )
     );
+    
+    const successHandledRef = useRef(false);
+    
+    const showSuccessRef = useRef(showSuccess);
+    const showErrorRef = useRef(showError);
+    const hideToastRef = useRef(hideToast);
+    
+    useEffect(() => {
+        showSuccessRef.current = showSuccess;
+        showErrorRef.current = showError;
+        hideToastRef.current = hideToast;
+    });
 
     const handleSubmit = async (data: DocumentFormData) => {
         if (!data.file) return;
@@ -28,14 +40,22 @@ const AddDocument = ({ poolId }: Props) => {
     };
 
     useEffect(() => {
-        if (success) {
-            showSuccess("Document ajouté avec succès");
+        if (success && !successHandledRef.current) {
+            successHandledRef.current = true;
+            showSuccessRef.current("Document ajouté avec succès");
+            
+            const timer = setTimeout(() => {
+                hideToastRef.current();
+                successHandledRef.current = false;
+            }, 2000);
+            
+            return () => clearTimeout(timer);
         }
     }, [success]);
 
     useEffect(() => {
         if (error) {
-            showError("Erreur lors de l'ajout du document");
+            showErrorRef.current("Erreur lors de l'ajout du document");
         }
     }, [error]);
 
@@ -45,7 +65,7 @@ const AddDocument = ({ poolId }: Props) => {
             <DocumentForm
                 key={success ? Date.now() : 'form'}
                 onSubmit={handleSubmit}
-                submitLabel="📎 Ajouter le document"
+                submitLabel="Ajouter le document"
                 isEdit={false}
                 loading={loading}
                 success={success}
