@@ -18,6 +18,7 @@ type Props = {
     success?: boolean;
     error?: string | null;
     disabled?: boolean;
+    uploadProgress?: number;
 };
 
 const DocumentForm = ({ 
@@ -28,7 +29,8 @@ const DocumentForm = ({
     loading = false,
     success = false,
     error: externalError = null,
-    disabled = false
+    disabled = false,
+    uploadProgress = 0
 }: Props) => {
     const [name, setName] = useState(initialData?.name ?? "");
     const [description, setDescription] = useState(initialData?.description ?? "");
@@ -46,6 +48,7 @@ const DocumentForm = ({
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
+        console.time('Form submit processing');
         setError(null);
         
         if (!name.trim()) {
@@ -56,13 +59,19 @@ const DocumentForm = ({
             setError("Le fichier est requis");
             return;
         }
+        if (file && file.size > 10 * 1024 * 1024) { 
+            setError("Le fichier ne doit pas dépasser 50 Mo");
+            return;
+        }
 
+        console.timeLog('Form submit processing', 'Validation passed');
         onSubmit({ 
             name, 
             description: description || undefined,
             expirationDate: expirationDate || undefined,
             file: file ?? undefined 
         });
+        console.timeEnd('Form submit processing');
     };
 
     useEffect(() => {
@@ -111,7 +120,10 @@ const DocumentForm = ({
                                 <div className="file-preview-info">
                                     <span className="file-preview-name">{file.name}</span>
                                     <span className="file-preview-size">
-                                        {(file.size / 1024).toFixed(2)} Ko
+                                        {file.size > 1024 * 1024 
+                                            ? `${(file.size / (1024 * 1024)).toFixed(2)} Mo`
+                                            : `${(file.size / 1024).toFixed(2)} Ko`
+                                        }
                                     </span>
                                 </div>
                                 <button 
@@ -171,6 +183,27 @@ const DocumentForm = ({
                             <div className="form-loading">
                                 <span className="spinner"></span>
                                 {isEdit ? "Modification en cours..." : "Ajout en cours..."}
+                                {uploadProgress > 0 && (
+                                    <div style={{ marginTop: '0.5rem' }}>
+                                        <div style={{ 
+                                            width: '100%', 
+                                            height: '4px', 
+                                            background: '#e0e0e0', 
+                                            borderRadius: '2px',
+                                            overflow: 'hidden'
+                                        }}>
+                                            <div style={{ 
+                                                width: `${uploadProgress}%`, 
+                                                height: '100%', 
+                                                background: '#007bff',
+                                                transition: 'width 0.3s ease'
+                                            }} />
+                                        </div>
+                                        <small style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', display: 'block' }}>
+                                            {uploadProgress}% uploadé
+                                        </small>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

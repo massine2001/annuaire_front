@@ -8,16 +8,29 @@ export const uploadFile = (
   file: globalThis.File, 
   poolId: number,
   description?: string,
-  expirationDate?: string
+  expirationDate?: string,
+  onProgress?: (progress: number) => void
 ) => {
+  console.time(`Upload file ${file.name}`);
   const formData = new FormData();
+  console.timeLog(`Upload file ${file.name}`, 'FormData created');
   formData.append('file', file);
   formData.append('poolId', poolId.toString());
   if (description) formData.append('description', description);
   if (expirationDate) formData.append('expirationDate', expirationDate);
+  console.timeLog(`Upload file ${file.name}`, 'FormData populated');
   
   return axiosClient.post('/files/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress: (progressEvent) => {
+      if (onProgress && progressEvent.total) {
+        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        onProgress(percent);
+      }
+    }
+  }).then(result => {
+    console.timeEnd(`Upload file ${file.name}`);
+    return result;
   });
 };
 
@@ -26,7 +39,8 @@ export const updateFile = (
   newFile?: globalThis.File,
   name?: string,
   description?: string,
-  expirationDate?: string
+  expirationDate?: string,
+  onProgress?: (progress: number) => void
 ) => {
   const formData = new FormData();
   if (newFile) formData.append('file', newFile);
@@ -35,7 +49,13 @@ export const updateFile = (
   if (expirationDate) formData.append('expirationDate', expirationDate);
   
   return axiosClient.put(`/files/${fileId}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress: (progressEvent) => {
+      if (onProgress && progressEvent.total) {
+        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        onProgress(percent);
+      }
+    }
   });
 };
 

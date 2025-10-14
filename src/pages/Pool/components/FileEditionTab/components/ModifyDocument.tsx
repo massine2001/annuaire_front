@@ -16,6 +16,7 @@ type Props = {
 
 const ModifyDocument = ({ poolId, isPublicView = false }: Props) => {
     const { toast, showSuccess, showError, hideToast } = useToast();
+    const [uploadProgress, setUploadProgress] = useState(0);
     
     const fetcher = useCallback(() => fetchFilesByPoolId(poolId), [poolId]);
     const { data: rawDocuments, loading: loadingDocs, refetch } = useFetch(fetcher);
@@ -41,7 +42,8 @@ const ModifyDocument = ({ poolId, isPublicView = false }: Props) => {
                 data.file ?? undefined,
                 newName,
                 data.description,
-                data.expirationDate
+                data.expirationDate,
+                (progress) => setUploadProgress(progress)
             );
         }
     );
@@ -78,6 +80,7 @@ const ModifyDocument = ({ poolId, isPublicView = false }: Props) => {
     useEffect(() => {
         if (success && !successHandledRef.current) {
             successHandledRef.current = true;
+            setUploadProgress(0);
             showSuccessRef.current("Document modifié avec succès");
             
             const timer = setTimeout(() => {
@@ -93,6 +96,7 @@ const ModifyDocument = ({ poolId, isPublicView = false }: Props) => {
 
     useEffect(() => {
         if (error) {
+            setUploadProgress(0);
             showErrorRef.current("Erreur lors de la modification du document");
         }
     }, [error]);
@@ -147,6 +151,7 @@ const ModifyDocument = ({ poolId, isPublicView = false }: Props) => {
                         success={success}
                         error={error}
                         disabled={isPublicView}
+                        uploadProgress={uploadProgress}
                     />
                 </>
             )}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import DocumentForm, { type DocumentFormData } from "./DocumentForm";
 import { uploadFile } from "../../../../../api/filePageApi";
 import { useMutation } from "../../../../../hooks/useMutation";
@@ -13,13 +13,15 @@ type Props = {
 
 const AddDocument = ({ poolId, isPublicView = false }: Props) => {
     const { toast, showSuccess, showError, hideToast } = useToast();
+    const [uploadProgress, setUploadProgress] = useState(0);
     
     const { execute, loading, success, error } = useMutation(
         (data: DocumentFormData) => uploadFile(
             data.file!,
             poolId,
             data.description,
-            data.expirationDate
+            data.expirationDate,
+            (progress) => setUploadProgress(progress)
         )
     );
     
@@ -37,12 +39,15 @@ const AddDocument = ({ poolId, isPublicView = false }: Props) => {
 
     const handleSubmit = async (data: DocumentFormData) => {
         if (!data.file) return;
+        console.time(`Total upload process for ${data.file.name}`);
         await execute(data);
+        console.timeEnd(`Total upload process for ${data.file.name}`);
     };
 
     useEffect(() => {
         if (success && !successHandledRef.current) {
             successHandledRef.current = true;
+            setUploadProgress(0);
             showSuccessRef.current("Document ajouté avec succès");
             
             const timer = setTimeout(() => {
@@ -56,6 +61,7 @@ const AddDocument = ({ poolId, isPublicView = false }: Props) => {
 
     useEffect(() => {
         if (error) {
+            setUploadProgress(0);
             showErrorRef.current("Erreur lors de l'ajout du document");
         }
     }, [error]);
@@ -77,6 +83,7 @@ const AddDocument = ({ poolId, isPublicView = false }: Props) => {
                 success={success}
                 error={error}
                 disabled={isPublicView}
+                uploadProgress={uploadProgress}
             />
 
             {toast && (
