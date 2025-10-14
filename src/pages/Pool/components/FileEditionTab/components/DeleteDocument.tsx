@@ -10,9 +10,10 @@ import '../style.css';
 
 type Props = {
     poolId: number;
+    isPublicView?: boolean;
 };
 
-const DeleteDocument = ({ poolId }: Props) => {
+const DeleteDocument = ({ poolId, isPublicView = false }: Props) => {
     const { toast, showSuccess, showError, hideToast } = useToast();
     
     const fetcher = useCallback(() => fetchFilesByPoolId(poolId), [poolId]);
@@ -101,6 +102,11 @@ const DeleteDocument = ({ poolId }: Props) => {
 
     return (
         <div className="document-form_wrapper">
+            {isPublicView && (
+                <div style={{ padding: '1rem', background: '#fff3cd', border: '1px solid #ffc107', borderRadius: '6px', marginBottom: '1rem' }}>
+                    ⚠️ <strong>Mode démonstration</strong> : La suppression de documents est désactivée.
+                </div>
+            )}
            
             <DocumentSelector
                 documents={documents}
@@ -138,6 +144,7 @@ const DeleteDocument = ({ poolId }: Props) => {
                             type="button" 
                             onClick={() => setSelectedDocId(null)}
                             className="fileEdition-chip-btn"
+                            disabled={isPublicView}
                         >
                             Annuler
                         </button>
@@ -145,6 +152,8 @@ const DeleteDocument = ({ poolId }: Props) => {
                             type="button"
                             onClick={handleShowConfirmation}
                             className="delete-document__btn-danger"
+                            disabled={isPublicView}
+                            style={isPublicView ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                         >
                             Supprimer
                         </button>

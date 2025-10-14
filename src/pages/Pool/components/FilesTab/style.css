@@ -6,6 +6,40 @@
   overflow-y: auto;
 }
 
+/* Bannière publique */
+.files-tab__public-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.files-tab__public-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+}
+
+.files-tab__public-icon {
+  font-size: 2rem;
+}
+
+.files-tab__public-content strong {
+  display: block;
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.files-tab__public-content p {
+  margin: 0;
+  font-size: 0.875rem;
+  opacity: 0.95;
+  line-height: 1.4;
+}
+
+
 /* Loading & Error */
 .files-tab__loading,
 .files-tab__error {

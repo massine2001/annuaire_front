@@ -16,9 +16,10 @@ import "./style.css";
 
 type Props = {
   poolId: number;
+  isPublicView?: boolean;
 };
 
-const MembersTab = ({ poolId }: Props) => {
+const MembersTab = ({ poolId, isPublicView = false }: Props) => {
   const { toast, showSuccess, showError, hideToast } = useToast();
   
   const [refreshKey, setRefreshKey] = useState(0);
@@ -132,6 +133,16 @@ const MembersTab = ({ poolId }: Props) => {
 
   return (
     <div className="members-tab">
+      {isPublicView && (
+        <div className="members-tab__public-banner">
+          <span className="members-tab__public-icon">🎯</span>
+          <div>
+            <strong>Mode démonstration</strong>
+            <p>Vous consultez les membres d'un pool public. Les actions de modification sont désactivées.</p>
+          </div>
+        </div>
+      )}
+
       <HeaderBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -157,6 +168,7 @@ const MembersTab = ({ poolId }: Props) => {
                 onViewDetails={() => handleViewDetails(access)}
                 onChangeRole={() => handleChangeRole(access)}
                 onRemove={() => handleRemove(access)}
+                isPublicView={isPublicView}
               />
             ))}
           </div>
@@ -174,7 +186,7 @@ const MembersTab = ({ poolId }: Props) => {
         />
       )}
 
-      {showChangeRoleModal && selectedMember && (
+      {!isPublicView && showChangeRoleModal && selectedMember && (
         <ChangeRoleModal
           member={selectedMember.user}
           currentRole={selectedMember.role}
@@ -187,7 +199,7 @@ const MembersTab = ({ poolId }: Props) => {
         />
       )}
 
-      {showRemoveModal && selectedMember && (
+      {!isPublicView && showRemoveModal && selectedMember && (
         <RemoveMemberModal
           member={selectedMember.user}
           role={selectedMember.role}

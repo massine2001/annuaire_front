@@ -8,9 +8,10 @@ import '../style.css';
 
 type Props = {
     poolId: number;
+    isPublicView?: boolean;
 };
 
-const AddDocument = ({ poolId }: Props) => {
+const AddDocument = ({ poolId, isPublicView = false }: Props) => {
     const { toast, showSuccess, showError, hideToast } = useToast();
     
     const { execute, loading, success, error } = useMutation(
@@ -61,6 +62,11 @@ const AddDocument = ({ poolId }: Props) => {
 
     return (
         <div className="document-form_wrapper">
+            {isPublicView && (
+                <div style={{ padding: '1rem', background: '#fff3cd', border: '1px solid #ffc107', borderRadius: '6px', marginBottom: '1rem' }}>
+                    ⚠️ <strong>Mode démonstration</strong> : L'ajout de documents est désactivé.
+                </div>
+            )}
                       
             <DocumentForm
                 key={success ? Date.now() : 'form'}
@@ -70,6 +76,7 @@ const AddDocument = ({ poolId }: Props) => {
                 loading={loading}
                 success={success}
                 error={error}
+                disabled={isPublicView}
             />
 
             {toast && (

@@ -11,9 +11,10 @@ import '../style.css';
 
 type Props = {
     poolId: number;
+    isPublicView?: boolean;
 };
 
-const ModifyDocument = ({ poolId }: Props) => {
+const ModifyDocument = ({ poolId, isPublicView = false }: Props) => {
     const { toast, showSuccess, showError, hideToast } = useToast();
     
     const fetcher = useCallback(() => fetchFilesByPoolId(poolId), [poolId]);
@@ -102,6 +103,11 @@ const ModifyDocument = ({ poolId }: Props) => {
 
     return (
         <div className="document-form_wrapper">
+            {isPublicView && (
+                <div style={{ padding: '1rem', background: '#fff3cd', border: '1px solid #ffc107', borderRadius: '6px', marginBottom: '1rem' }}>
+                    ⚠️ <strong>Mode démonstration</strong> : La modification de documents est désactivée.
+                </div>
+            )}
            
             <DocumentSelector
                 documents={documents}
@@ -140,6 +146,7 @@ const ModifyDocument = ({ poolId }: Props) => {
                         loading={loading}
                         success={success}
                         error={error}
+                        disabled={isPublicView}
                     />
                 </>
             )}

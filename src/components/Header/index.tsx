@@ -15,14 +15,15 @@ const Header = () => {
 
     return(
         <nav className="navbar">
-            {isAuthenticated && (
+            <NavLink to='/'>
+                {LABEL_HEADER.HOME}
+            </NavLink>
+            <NavLink to='/pool'>
+                {LABEL_HEADER.POOL}
+            </NavLink>
+
+            {isAuthenticated ? (
                 <>
-                    <NavLink to='/pool'>
-                        {LABEL_HEADER.POOL}
-                    </NavLink>
-                    <NavLink to='/'>
-                        {LABEL_HEADER.HOME}
-                    </NavLink>
                     <NavLink to='/profil'>
                         {LABEL_HEADER.PROFIL}
                     </NavLink>
@@ -36,6 +37,15 @@ const Header = () => {
                         </button>
                     </div>
                 </>
+            ) : (
+                <div className="navbar-right">
+                    <NavLink to='/login' className="navbar-login">
+                        Se connecter
+                    </NavLink>
+                    <NavLink to='/register' className="navbar-register">
+                        S'inscrire
+                    </NavLink>
+                </div>
             )}
         </nav>
     )

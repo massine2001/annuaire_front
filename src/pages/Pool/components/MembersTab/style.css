@@ -7,6 +7,37 @@
   overflow-y: auto;
 }
 
+/* Bannière publique */
+.members-tab__public-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.members-tab__public-icon {
+  font-size: 2rem;
+}
+
+.members-tab__public-banner strong {
+  display: block;
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.members-tab__public-banner p {
+  margin: 0;
+  font-size: 0.875rem;
+  opacity: 0.95;
+  line-height: 1.4;
+}
+
+
 /* Loading & Error */
 .members-tab__loading,
 .members-tab__error {

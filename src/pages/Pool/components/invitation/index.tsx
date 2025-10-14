@@ -13,9 +13,10 @@ type Props = {
   poolId: number;
   poolName: string;
   currentUserName: string;
+  isPublicView?: boolean;
 };
 
-const InvitationTab = ({ poolId, poolName, currentUserName }: Props) => {
+const InvitationTab = ({ poolId, poolName, currentUserName, isPublicView = false }: Props) => {
   const { toast, showSuccess, showError, hideToast } = useToast();
   
   const [emailList, setEmailList] = useState<string[]>([]);
@@ -81,6 +82,16 @@ const InvitationTab = ({ poolId, poolName, currentUserName }: Props) => {
 
   return (
     <div className="invitation-tab">
+      {isPublicView && (
+        <div className="invitation-tab__public-banner">
+          <span style={{ fontSize: '2rem' }}>🎯</span>
+          <div>
+            <strong>Mode démonstration</strong>
+            <p>Les invitations sont désactivées en mode public.</p>
+          </div>
+        </div>
+      )}
+
       <div className="invitation-tab__header">
         <h2 className="invitation-tab__title">✉️ Inviter des membres</h2>
         <p className="invitation-tab__subtitle">
@@ -107,6 +118,7 @@ const InvitationTab = ({ poolId, poolName, currentUserName }: Props) => {
           <button
             className="invitation-tab__btn invitation-tab__btn--secondary"
             onClick={handleReset}
+            disabled={isPublicView}
           >
             Annuler
           </button>
@@ -114,7 +126,8 @@ const InvitationTab = ({ poolId, poolName, currentUserName }: Props) => {
           <button
             className="invitation-tab__btn invitation-tab__btn--success"
             onClick={handleSendInvitations}
-            disabled={emailList.length === 0}
+            disabled={emailList.length === 0 || isPublicView}
+            style={isPublicView ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
           >
             ✉️ Envoyer {emailList.length > 0 ? `(${emailList.length})` : ''}
           </button>

@@ -30,6 +30,8 @@ export interface Pool {
   description?: string;
   createdBy?: number;
   createdAt?: string;
+  publicAccess?: boolean;
+  fileCount?: number;
 }
 
 export interface File {

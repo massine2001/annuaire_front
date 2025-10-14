@@ -7,9 +7,10 @@ interface PoolCardProps {
   memberCount?: number;
   fileCount?: number;
   role?: string;
+  isPublicView?: boolean; 
 }
 
-const PoolCard = ({ pool, memberCount = 0, fileCount = 0, role = "member" }: PoolCardProps) => {
+const PoolCard = ({ pool, memberCount = 0, fileCount = 0, role = "member", isPublicView = false }: PoolCardProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -40,9 +41,16 @@ const PoolCard = ({ pool, memberCount = 0, fileCount = 0, role = "member" }: Poo
     <div className="pool-card" onClick={handleClick}>
       <div className="pool-card__header">
         <div className="pool-card__icon">📁</div>
-        <div className={`pool-card__badge ${getRoleBadgeClass()}`}>
-          {role}
-        </div>
+        {!isPublicView && (
+          <div className={`pool-card__badge ${getRoleBadgeClass()}`}>
+            {role}
+          </div>
+        )}
+        {isPublicView && pool.publicAccess && (
+          <div className="pool-card__badge pool-card__badge--demo">
+            🎯 Démo
+          </div>
+        )}
       </div>
 
       <div className="pool-card__content">
@@ -53,11 +61,14 @@ const PoolCard = ({ pool, memberCount = 0, fileCount = 0, role = "member" }: Poo
       </div>
 
       <div className="pool-card__stats">
-        <div className="pool-card__stat">
-          <span className="pool-card__stat-icon">👥</span>
-          <span className="pool-card__stat-value">{memberCount}</span>
-          <span className="pool-card__stat-label">membres</span>
-        </div>
+        {/* Masquer le nombre de membres en mode public */}
+        {!isPublicView && (
+          <div className="pool-card__stat">
+            <span className="pool-card__stat-icon">👥</span>
+            <span className="pool-card__stat-value">{memberCount}</span>
+            <span className="pool-card__stat-label">membres</span>
+          </div>
+        )}
         <div className="pool-card__stat">
           <span className="pool-card__stat-icon">📄</span>
           <span className="pool-card__stat-value">{fileCount}</span>
@@ -70,7 +81,7 @@ const PoolCard = ({ pool, memberCount = 0, fileCount = 0, role = "member" }: Poo
           Créée le {formatDate(pool.createdAt)}
         </span>
         <button className="pool-card__button">
-          Accéder →
+          {isPublicView ? "Explorer →" : "Accéder →"}
         </button>
       </div>
     </div>

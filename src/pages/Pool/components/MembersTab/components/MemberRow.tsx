@@ -7,9 +7,10 @@ type Props = {
   onViewDetails: () => void;
   onChangeRole: () => void;
   onRemove: () => void;
+  isPublicView?: boolean;
 };
 
-export const MemberRow = memo(({ member, role, onViewDetails, onChangeRole, onRemove }: Props) => {
+export const MemberRow = memo(({ member, role, onViewDetails, onChangeRole, onRemove, isPublicView = false }: Props) => {
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   };
@@ -57,20 +58,24 @@ export const MemberRow = memo(({ member, role, onViewDetails, onChangeRole, onRe
         >
           ℹ️
         </button>
-        <button
-          className="members-tab__action-btn"
-          title="Modifier le rôle"
-          onClick={onChangeRole}
-        >
-          ✏️
-        </button>
-        <button
-          className="members-tab__action-btn members-tab__action-btn--danger"
-          title="Retirer de la pool"
-          onClick={onRemove}
-        >
-          🗑️
-        </button>
+        {!isPublicView && (
+          <>
+            <button
+              className="members-tab__action-btn"
+              title="Modifier le rôle"
+              onClick={onChangeRole}
+            >
+              ✏️
+            </button>
+            <button
+              className="members-tab__action-btn members-tab__action-btn--danger"
+              title="Retirer de la pool"
+              onClick={onRemove}
+            >
+              🗑️
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

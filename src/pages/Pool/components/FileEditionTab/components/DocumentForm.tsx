@@ -17,6 +17,7 @@ type Props = {
     loading?: boolean;
     success?: boolean;
     error?: string | null;
+    disabled?: boolean;
 };
 
 const DocumentForm = ({ 
@@ -26,7 +27,8 @@ const DocumentForm = ({
     isEdit = false,
     loading = false,
     success = false,
-    error: externalError = null
+    error: externalError = null,
+    disabled = false
 }: Props) => {
     const [name, setName] = useState(initialData?.name ?? "");
     const [description, setDescription] = useState(initialData?.description ?? "");
@@ -179,12 +181,15 @@ const DocumentForm = ({
                         type="button" 
                         onClick={() => initialForm()}
                         className="fileEdition-chip-btn"
+                        disabled={disabled}
                     >
                         Annuler
                     </button>
                     <button 
                         type="submit"
                         className="fileEdition-chip-btn-active"
+                        disabled={disabled || loading}
+                        style={disabled ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
                     >
                         {submitLabel}
                     </button>

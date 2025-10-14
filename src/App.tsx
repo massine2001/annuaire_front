@@ -19,22 +19,9 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/join" element={<JoinPage />} />
 
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/pool"
-            element={
-              <ProtectedRoute>
-                <PoolPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<Home />} />
+          <Route path="/pool" element={<PoolPage />} />
+
           <Route
             path="/profil"
             element={

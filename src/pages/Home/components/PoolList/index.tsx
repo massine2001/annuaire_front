@@ -12,9 +12,10 @@ interface PoolWithStats extends Pool {
 interface PoolListProps {
   pools: PoolWithStats[];
   loading?: boolean;
+  isPublicView?: boolean; 
 }
 
-const PoolList = ({ pools, loading = false }: PoolListProps) => {
+const PoolList = ({ pools, loading = false, isPublicView = false }: PoolListProps) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredPools = pools.filter((pool) =>
@@ -79,6 +80,7 @@ const PoolList = ({ pools, loading = false }: PoolListProps) => {
               memberCount={pool.memberCount}
               fileCount={pool.fileCount}
               role={pool.userRole}
+              isPublicView={isPublicView}
             />
           ))}
         </div>

@@ -59,6 +59,11 @@
   color: #6b7280;
 }
 
+.pool-card__badge--demo {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
 .pool-card__content {
   flex: 1;
   display: flex;

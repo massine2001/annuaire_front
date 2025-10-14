@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchPoolsByUserId, fetchPoolStats } from "../../api/poolPageApi";
+import { fetchPublicPools } from "../../api/publicPoolsApi";
 import { useToast } from "../../hooks/useToast";
 import { useAuth } from "../../hooks/useAuth";
 import { Toast } from "../../components/Toast";
@@ -25,14 +26,24 @@ const Home = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const loadPools = async () => {
-    if (!user?.id) {
-      setPools([]);
-      setLoading(false);
-      return;
-    }
-    
     setLoading(true);
     try {
+      if (!user?.id) {
+        const publicPools = await fetchPublicPools();
+        if (!Array.isArray(publicPools)) {
+          setPools([]);
+          return;
+        }
+        const poolsWithStats = publicPools.map(pool => ({
+          ...pool,
+          memberCount: 0,
+          fileCount: pool.fileCount || 0,
+          userRole: undefined, 
+        }));
+        setPools(poolsWithStats);
+        return;
+      }
+
       const userPools = await fetchPoolsByUserId(user.id);
       if (!Array.isArray(userPools)) {
         setPools([]);
@@ -71,9 +82,7 @@ const Home = () => {
   };
 
   useEffect(() => {
-    if (user?.id) {
-      loadPools();
-    }
+    loadPools(); 
   }, [user?.id]);
 
   const handleCreateSuccess = () => {
@@ -84,18 +93,39 @@ const Home = () => {
     <div className="home">
       <div className="home-first-row">
         <Description />
-        <QuickData />
+        {user && <QuickData />}
       </div>
 
       <div className="home-pools-section">
+        {!user && pools.length > 0 && (
+          <div className="home-demo-banner">
+            <div className="home-demo-content">
+              <div className="home-demo-text">
+                <h3>🎯 Vous consultez les pools en mode démo</h3>
+                <p>Créez un compte gratuit pour créer vos propres pools et partager vos documents en toute sécurité !</p>
+              </div>
+              <button
+                className="home-demo-cta"
+                onClick={() => window.location.href = '/login'}
+              >
+                Se connecter / S'inscrire
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="home-pools-header">
           <div>
-            <h2 className="home-pools-title">Mes Pools</h2>
+            <h2 className="home-pools-title">
+              {user ? "Mes Pools" : "Pools Publics"}
+            </h2>
             <p className="home-pools-subtitle">
-              Gérez vos espaces de collaboration
+              {user 
+                ? "Gérez vos espaces de collaboration" 
+                : "Découvrez les fonctionnalités en mode démo"}
             </p>
           </div>
-          {pools.length > 0 && !loading && (
+          {user && pools.length > 0 && !loading && (
             <button
               className="home-create-pool-button"
               onClick={() => setIsCreateModalOpen(true)}
@@ -108,9 +138,18 @@ const Home = () => {
         {loading ? (
           <PoolList pools={[]} loading={true} />
         ) : pools.length === 0 ? (
-          <PoolsEmptyState onCreatePool={() => setIsCreateModalOpen(true)} />
+          user ? (
+            <PoolsEmptyState onCreatePool={() => setIsCreateModalOpen(true)} />
+          ) : (
+            <div className="home-no-public-pools">
+              <p>Aucun pool public disponible pour le moment.</p>
+              <button onClick={() => window.location.href = '/login'}>
+                Se connecter pour créer vos pools
+              </button>
+            </div>
+          )
         ) : (
-          <PoolList pools={pools} />
+          <PoolList pools={pools} isPublicView={!user} />
         )}
       </div>
 

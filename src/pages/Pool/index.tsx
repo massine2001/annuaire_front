@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState, useEffect } from "react";
 import { DataList } from "../../components/DataList";
 import { fetchPoolsByUserId } from "../../api/poolPageApi";
+import { fetchPublicPools } from "../../api/publicPoolsApi";
 import { useFetch } from "../../hooks/useFetch";
 import { useAuth } from "../../hooks/useAuth";
 import { useToast } from "../../hooks/useToast";
@@ -14,7 +15,7 @@ import { useMediaQuery } from "../../hooks/useMediaQuery";
 const PoolPage = () => {
   const { user } = useAuth();
   const fetcher = useCallback(() => {
-    if (!user?.id) return Promise.resolve([]);
+    if (!user?.id) return fetchPublicPools();
     return fetchPoolsByUserId(user.id);
   }, [user?.id]);
   const { data: pools = [], loading, error, refetch } = useFetch<Pool[]>(fetcher);
@@ -22,9 +23,7 @@ const PoolPage = () => {
   const { toast, hideToast } = useToast();
 
   useEffect(() => {
-    if (user?.id) {
-      refetch();
-    }
+    refetch();
   }, [user?.id, refetch]);
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -55,15 +54,20 @@ const PoolPage = () => {
         selectedId={selectedId}
         onSelect={setSelectedId}
         config={{
-          title: "Liste des Pools",
+          title: user ? "Liste des Pools" : "Pools Publics",
           searchPlaceholder: "Rechercher une pool...",
-          actionButtonText: "Créer une Pool",
-          onActionClick: () => setIsCreateModalOpen(true),
+          actionButtonText: user ? "Créer une Pool" : undefined,
+          onActionClick: user ? () => setIsCreateModalOpen(true) : undefined,
           getSearchText: (pool) => pool.name,
           getDisplayText: (pool) => pool.name,
         }}
       />
-      <PoolDashboard pool={selectedPool} onPoolDeleted={handlePoolDeleted} onPoolUpdated={refetch} />
+      <PoolDashboard 
+        pool={selectedPool} 
+        onPoolDeleted={handlePoolDeleted} 
+        onPoolUpdated={refetch} 
+        isPublicView={!user}
+      />
 
       <CreatePoolModal
         isOpen={isCreateModalOpen}

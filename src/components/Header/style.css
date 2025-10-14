@@ -64,3 +64,45 @@
 .navbar-logout:active {
   transform: translateY(0);
 }
+
+/* Boutons pour les visiteurs non connectés */
+.navbar-login,
+.navbar-register {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  text-decoration: none !important;
+}
+
+.navbar-login {
+  background-color: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+}
+
+.navbar-login:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  border-color: #667eea;
+  transform: translateY(-1px);
+}
+
+.navbar-register {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: 2px solid #667eea;
+}
+
+.navbar-register:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #653a8b 100%);
+  border-color: #5568d3;
+  transform: translateY(-1px);
+  color: white !important;
+}
+
+.navbar-login.active,
+.navbar-register.active {
+  text-decoration: none !important;
+}

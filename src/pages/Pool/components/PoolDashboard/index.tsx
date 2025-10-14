@@ -11,8 +11,18 @@ import InvitationTab from "../invitation";
 
 type TabType = "info" | "members" | "invitations" | "documents" | "edit";
 
-const PoolDashboard = ({ pool, onPoolDeleted, onPoolUpdated }: { pool: Pool | null; onPoolDeleted?: () => void; onPoolUpdated?: () => void }) => {
-  const [activeTab, setActiveTab] = useState<TabType>("documents");
+const PoolDashboard = ({ 
+  pool, 
+  onPoolDeleted, 
+  onPoolUpdated, 
+  isPublicView = false 
+}: { 
+  pool: Pool | null; 
+  onPoolDeleted?: () => void; 
+  onPoolUpdated?: () => void;
+  isPublicView?: boolean;
+}) => {
+  const [activeTab, setActiveTab] = useState<TabType>(isPublicView ? "documents" : "documents");
 
   if (!pool) {
     return <EmptyState />;
@@ -55,16 +65,14 @@ const PoolDashboard = ({ pool, onPoolDeleted, onPoolUpdated }: { pool: Pool | nu
         >
           Invitations
         </button>
-
       </nav>
 
       <div className="pool-dashboard__content">
-        {activeTab === "info" && <InfoTab poolId={pool.id} onPoolDeleted={onPoolDeleted} onPoolUpdated={onPoolUpdated} />}
-        {activeTab === "documents" && <FilesTab poolId={pool.id} />}
-        {activeTab === "edit" && <FileEditionTab poolId={pool.id} />}
-        {activeTab === "members" && <MembersTab poolId={pool.id} />}
-        {activeTab === "invitations" && <InvitationTab poolId={pool.id} poolName={pool.name} currentUserName={'massine'} />}
-
+        {activeTab === "documents" && <FilesTab poolId={pool.id} isPublicView={isPublicView} />}
+        {activeTab === "info" && <InfoTab poolId={pool.id} onPoolDeleted={onPoolDeleted} onPoolUpdated={onPoolUpdated} isPublicView={isPublicView} />}
+        {activeTab === "edit" && <FileEditionTab poolId={pool.id} isPublicView={isPublicView} />}
+        {activeTab === "members" && <MembersTab poolId={pool.id} isPublicView={isPublicView} />}
+        {activeTab === "invitations" && <InvitationTab poolId={pool.id} poolName={pool.name} currentUserName={'massine'} isPublicView={isPublicView} />}
       </div>
     </div>
   );

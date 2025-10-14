@@ -8,9 +8,10 @@ type Props = {
   onDetails: (file: File) => void;
   previewingId: number | null;
   downloadingId: number | null;
+  isPublicView?: boolean;
 };
 
-export const GroupedList = ({ groups, onPreview, onDownload, onDetails, previewingId, downloadingId }: Props) => {
+export const GroupedList = ({ groups, onPreview, onDownload, onDetails, previewingId, downloadingId, isPublicView = false }: Props) => {
   return (
     <>
       {Object.entries(groups).map(([groupName, groupFiles]) => (
@@ -29,6 +30,7 @@ export const GroupedList = ({ groups, onPreview, onDownload, onDetails, previewi
                 onDetails={onDetails}
                 isPreviewing={previewingId === f.id}
                 isDownloading={downloadingId === f.id}
+                isPublicView={isPublicView}
               />
             ))}
           </div>

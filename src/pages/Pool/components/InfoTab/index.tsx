@@ -9,7 +9,7 @@ import EditPoolModal from "./components/EditPoolModal";
 import DeletePoolModal from "./components/DeletePoolModal";
 import "./style.css";
 
-const InfoTab = ({ poolId, onPoolDeleted, onPoolUpdated }: { poolId: number; onPoolDeleted?: () => void; onPoolUpdated?: () => void }) => {
+const InfoTab = ({ poolId, onPoolDeleted, onPoolUpdated, isPublicView = false }: { poolId: number; onPoolDeleted?: () => void; onPoolUpdated?: () => void; isPublicView?: boolean }) => {
   const fetcher = useCallback(() => fetchPoolStats(poolId), [poolId]);
   const { data: stats, loading, error, refetch } = useFetch<PoolStats>(fetcher);
   const { toast, hideToast } = useToast();
@@ -19,8 +19,8 @@ const InfoTab = ({ poolId, onPoolDeleted, onPoolUpdated }: { poolId: number; onP
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   
   const userAccess = stats?.accesses.find(access => access.user.id === user?.id);
-  const canEdit = userAccess?.role === "admin" || userAccess?.role === "owner";
-  const canDelete = userAccess?.role === "admin" || userAccess?.role === "owner";
+  const canEdit = !isPublicView && (userAccess?.role === "admin" || userAccess?.role === "owner");
+  const canDelete = !isPublicView && (userAccess?.role === "admin" || userAccess?.role === "owner");
 
   const handleEditSuccess = () => {
     refetch();
@@ -65,6 +65,16 @@ const InfoTab = ({ poolId, onPoolDeleted, onPoolUpdated }: { poolId: number; onP
 
   return (
     <div className="info-tab">
+      {isPublicView && (
+        <div className="info-tab__public-banner">
+          <span className="info-tab__public-icon">🎯</span>
+          <div>
+            <strong>Mode démonstration</strong>
+            <p>Vous consultez les statistiques d'un pool public. Les boutons d'action sont désactivés.</p>
+          </div>
+        </div>
+      )}
+
       {(canEdit || canDelete) && (
         <div className="info-tab__actions">
           {canEdit && (

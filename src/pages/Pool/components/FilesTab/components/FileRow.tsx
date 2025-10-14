@@ -9,6 +9,7 @@ type Props = {
   onDetails: (file: File) => void;
   isPreviewing: boolean;
   isDownloading: boolean;
+  isPublicView?: boolean; 
 };
 
 export const FileRow = memo(({ file, onPreview, onDownload, onDetails, isPreviewing, isDownloading }: Props) => {

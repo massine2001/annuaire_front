@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useFetch } from "../../../../hooks/useFetch";
 import { fetchFilesByPoolId } from "../../../../api/poolPageApi";
+import { fetchPublicPoolFiles } from "../../../../api/publicPoolsApi";
 import { downloadFile, previewFile } from "../../../../api/filePageApi";
 import type { File } from "../../../../types/models";
 import "./style.css";
@@ -13,8 +14,11 @@ import { useGroupedFiles } from "./hooks/useGroupedFiles";
 
 export type GroupingType = "member" | "extension" | "date";
 
-const FilesTab = ({ poolId }: { poolId: number }) => {
-  const fetcher = useCallback(() => fetchFilesByPoolId(poolId), [poolId]);
+const FilesTab = ({ poolId, isPublicView = false }: { poolId: number; isPublicView?: boolean }) => {
+  const fetcher = useCallback(() => {
+    if (isPublicView) return fetchPublicPoolFiles(poolId);
+    return fetchFilesByPoolId(poolId);
+  }, [poolId, isPublicView]);
   const { data: files, loading, error } = useFetch<File[]>(fetcher);
 
   const [grouping, setGrouping] = useState<GroupingType>("member");
@@ -84,6 +88,18 @@ const FilesTab = ({ poolId }: { poolId: number }) => {
 
   return (
     <div className="files-tab">
+      {isPublicView && (
+        <div className="files-tab__public-banner">
+          <div className="files-tab__public-content">
+            <span className="files-tab__public-icon">🎯</span>
+            <div>
+              <strong>Mode démonstration</strong>
+              <p>Vous consultez un pool public. Connectez-vous pour créer vos propres pools et gérer vos documents.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <HeaderBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -100,6 +116,7 @@ const FilesTab = ({ poolId }: { poolId: number }) => {
           onDetails={handleDetails}
           previewingId={previewing}
           downloadingId={downloading}
+          isPublicView={isPublicView}
         />
       </div>
 
