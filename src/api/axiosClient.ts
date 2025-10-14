@@ -15,7 +15,14 @@ axiosClient.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             const currentPath = window.location.pathname;
-            if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
+            const publicRoutes = ['/', '/login', '/register', '/join', '/pool'];
+            const isPublicRoute = publicRoutes.some(route => 
+                currentPath === route || currentPath.startsWith(route + '/')
+            );
+            
+            const isAuthCheck = error.config?.url?.includes('/auth/me');
+            
+            if (!isPublicRoute && !isAuthCheck) {
                 window.location.href = '/login';
             }
         }

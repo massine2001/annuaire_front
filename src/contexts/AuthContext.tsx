@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = () => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8082/api'}/auth/logout`, {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}auth/logout`, {
       method: 'POST',
       credentials: 'include',
     }).then(() => {
