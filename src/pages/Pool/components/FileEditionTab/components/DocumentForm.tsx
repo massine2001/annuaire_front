@@ -48,7 +48,6 @@ const DocumentForm = ({
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        console.time('Form submit processing');
         setError(null);
         
         if (!name.trim()) {
@@ -64,14 +63,12 @@ const DocumentForm = ({
             return;
         }
 
-        console.timeLog('Form submit processing', 'Validation passed');
         onSubmit({ 
             name, 
             description: description || undefined,
             expirationDate: expirationDate || undefined,
             file: file ?? undefined 
         });
-        console.timeEnd('Form submit processing');
     };
 
     useEffect(() => {
@@ -183,7 +180,7 @@ const DocumentForm = ({
                             <div className="form-loading">
                                 <span className="spinner"></span>
                                 {isEdit ? "Modification en cours..." : "Ajout en cours..."}
-                                {uploadProgress > 0 && (
+                                {uploadProgress > 0 && uploadProgress < 100 && (
                                     <div style={{ marginTop: '0.5rem' }}>
                                         <div style={{ 
                                             width: '100%', 
@@ -201,6 +198,13 @@ const DocumentForm = ({
                                         </div>
                                         <small style={{ fontSize: '0.75rem', color: '#666', marginTop: '0.25rem', display: 'block' }}>
                                             {uploadProgress}% uploadé
+                                        </small>
+                                    </div>
+                                )}
+                                {uploadProgress === 100 && (
+                                    <div style={{ marginTop: '0.5rem' }}>
+                                        <small style={{ fontSize: '0.75rem', color: '#666' }}>
+                                            Upload terminé, traitement en cours...
                                         </small>
                                     </div>
                                 )}
