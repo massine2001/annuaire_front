@@ -166,11 +166,13 @@
   border: 0;
   outline: none;
   padding: 0.2rem 0;
-  display: none; /* Masqué par défaut */
+  display: none; 
+  pointer-events: none; 
 }
 
 .mselect__input.is-active {
-  display: block; /* Affiché seulement en mode recherche */
+  display: block; 
+  pointer-events: auto; 
 }
 
 .mselect__value {
@@ -180,6 +182,19 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+  padding: 0.2rem 0;
+  border-radius: 2px;
+  transition: background-color 0.15s ease;
+}
+
+.mselect__value:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.mselect__value:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
 }
 
 .mselect__buttons {

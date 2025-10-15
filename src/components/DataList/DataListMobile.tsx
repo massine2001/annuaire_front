@@ -89,11 +89,20 @@ export function DataListMobile<T extends DataItem>({
           aria-owns="data-options"
           aria-expanded={open}
         >
-          {!isSearching && (
-            <div className="mselect__value">
-              {selectedItem ? getDisplayText(selectedItem) : searchPlaceholder}
-            </div>
-          )}
+          <div
+            className="mselect__value"
+            onClick={toggleOpen}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleOpen();
+              }
+            }}
+          >
+            {selectedItem ? getDisplayText(selectedItem) : searchPlaceholder}
+          </div>
 
           <input
             id="data-combobox"
@@ -123,22 +132,22 @@ export function DataListMobile<T extends DataItem>({
               <>
                 <button
                   type="button"
-                  className="mselect__search-btn"
-                  aria-label="Activer la recherche"
-                  onClick={startSearch}
-                  disabled={loading}
-                >
-                  🔍
-                </button>
-
-                <button
-                  type="button"
                   className="mselect__toggle"
                   aria-label={open ? "Fermer la liste" : "Ouvrir la liste"}
                   onClick={toggleOpen}
                   disabled={loading}
                 >
                   <span className={`mselect__arrow ${open ? 'is-open' : ''}`}>▼</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="mselect__search-btn"
+                  aria-label="Activer la recherche"
+                  onClick={startSearch}
+                  disabled={loading}
+                >
+                  🔍
                 </button>
               </>
             ) : (
