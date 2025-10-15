@@ -247,7 +247,8 @@
 
 /* Textarea */
 .invitation-tab__textarea {
-  width: 100%;
+  width: -webkit-fill-available;
+  width: -moz-available;
   padding: 1rem;
   border: 2px solid #d1d5db;
   border-radius: 6px;
@@ -623,7 +624,7 @@
   }
 
   .invitation-tab__section {
-    padding: 1rem;
+    padding: 0;
   }
 
   .invitation-tab__email-input-group {

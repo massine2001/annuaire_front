@@ -20,7 +20,6 @@ export function useFilteredFiles(files: File[] | undefined, searchTerm: string) 
       return name.includes(term) || fn.includes(term) || ln.includes(term);
     });
 
-    // Appliquer le même tri aux fichiers filtrés
     return filtered.sort((a, b) => {
       const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;

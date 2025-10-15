@@ -67,15 +67,16 @@ export const acceptInvitation = async (data: {
 };
 
 
-export const getPoolInvitations = async (poolId: number): Promise<{
-  email: string;
-  sentAt: string;
-  status: "pending" | "accepted" | "expired";
-}[]> => {
-  try {
-    const response = await axiosClient.get(`/api/invitations/pool/${poolId}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
+// Note: Cette fonction n'a pas d'équivalent backend car il n'y a pas de table invitation
+// export const getPoolInvitations = async (poolId: number): Promise<{
+//   email: string;
+//   sentAt: string;
+//   status: "pending" | "accepted" | "expired";
+// }[]> => {
+//   try {
+//     const response = await axiosClient.get(`/api/invitations/pool/${poolId}`);
+//     return response.data;
+//   } catch (error) {
+//     throw error;
+//   }
+// };

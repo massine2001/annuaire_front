@@ -9,6 +9,12 @@
   overflow: hidden;
 }
 
+@media (max-width: 768px) {
+  .pool-dashboard {
+    margin: 0.2rem;
+  }
+}
+
 .pool-dashboard__header {
   padding: 0.5rem;
   background-color: #f9f9f9;

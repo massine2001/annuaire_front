@@ -132,7 +132,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .profil-page {
-    padding: 1rem;
+    padding: 0;
   }
 
   .profil-header {

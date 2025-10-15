@@ -14,7 +14,9 @@ export function DataListMobile<T extends DataItem>({
 }: DataListProps<T>) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const selectedItem = useMemo(
     () => ((items ?? []).find((item) => item.id === selectedId)) ?? null,
@@ -24,6 +26,25 @@ export function DataListMobile<T extends DataItem>({
   useEffect(() => {
     if (selectedItem) setQuery(config.getDisplayText(selectedItem));
   }, [selectedItem, config]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: Event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+        setIsSearching(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [open]);
 
   const filtered = useMemo(() => {
     const q = deburr(query).toLowerCase().trim();
@@ -41,9 +62,26 @@ export function DataListMobile<T extends DataItem>({
     getDisplayText,
   } = config;
 
+  const toggleOpen = () => {
+    setOpen(!open);
+    setIsSearching(false);
+  };
+
+  const startSearch = () => {
+    setIsSearching(true);
+    setOpen(true);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  const stopSearch = () => {
+    setIsSearching(false);
+    setQuery("");
+    inputRef.current?.blur();
+  };
+
   return (
     <aside aria-busy={loading || undefined}>
-      <div className="mselect__combobox">
+      <div className="mselect__combobox" ref={containerRef}>
         <div
           className={`mselect__control ${open ? "is-open" : ""}`}
           role="combobox"
@@ -51,12 +89,18 @@ export function DataListMobile<T extends DataItem>({
           aria-owns="data-options"
           aria-expanded={open}
         >
+          {!isSearching && (
+            <div className="mselect__value">
+              {selectedItem ? getDisplayText(selectedItem) : searchPlaceholder}
+            </div>
+          )}
+
           <input
             id="data-combobox"
             ref={inputRef}
             type="text"
-            className="mselect__input"
-            placeholder={loading ? loadingText : searchPlaceholder}
+            className={`mselect__input ${isSearching ? 'is-active' : ''}`}
+            placeholder={loading ? loadingText : "Rechercher..."}
             aria-autocomplete="list"
             aria-controls="data-options"
             value={query}
@@ -67,24 +111,63 @@ export function DataListMobile<T extends DataItem>({
             onFocus={() => {
               if (!open) setOpen(true);
             }}
+            onBlur={() => {
+              
+            }}
             disabled={loading}
+            readOnly={!isSearching}
           />
 
-          {selectedItem && (
-            <button
-              type="button"
-              className="mselect__clear"
-              aria-label="Effacer la sélection"
-              onClick={() => {
-                onSelect(null);
-                setQuery("");
-                setOpen(true);
-                inputRef.current?.focus();
-              }}
-            >
-              ×
-            </button>
-          )}
+          <div className="mselect__buttons">
+            {!isSearching ? (
+              <>
+                <button
+                  type="button"
+                  className="mselect__search-btn"
+                  aria-label="Activer la recherche"
+                  onClick={startSearch}
+                  disabled={loading}
+                >
+                  🔍
+                </button>
+
+                <button
+                  type="button"
+                  className="mselect__toggle"
+                  aria-label={open ? "Fermer la liste" : "Ouvrir la liste"}
+                  onClick={toggleOpen}
+                  disabled={loading}
+                >
+                  <span className={`mselect__arrow ${open ? 'is-open' : ''}`}>▼</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="mselect__stop-search"
+                  aria-label="Arrêter la recherche"
+                  onClick={stopSearch}
+                >
+                  ✕
+                </button>
+              </>
+            )}
+
+            {selectedItem && !isSearching && (
+              <button
+                type="button"
+                className="mselect__clear"
+                aria-label="Effacer la sélection"
+                onClick={() => {
+                  onSelect(null);
+                  setQuery("");
+                }}
+              >
+                ×
+              </button>
+            )}
+          </div>
         </div>
 
         {open && (
@@ -111,11 +194,11 @@ export function DataListMobile<T extends DataItem>({
                     className={`mselect__option ${
                       selectedId === item.id ? "is-selected" : ""
                     }`}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
+                    onClick={() => {
                       onSelect(item.id);
                       setQuery(getDisplayText(item));
                       setOpen(false);
+                      setIsSearching(false);
                     }}
                   >
                     {getDisplayText(item)}

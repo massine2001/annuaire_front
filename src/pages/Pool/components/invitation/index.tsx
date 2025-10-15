@@ -6,7 +6,6 @@ import { useSendInvitations } from "./hooks/useSendInvitations";
 import EmailInputSection from "./components/EmailInputSection";
 import MessageEditor from "./components/MessageEditor";
 import SendModal from "./components/SendModal";
-import InvitationHistory from "./components/InvitationHistory";
 import "./style.css";
 
 type Props = {
@@ -133,7 +132,6 @@ const InvitationTab = ({ poolId, poolName, currentUserName, isPublicView = false
           </button>
         </div>
 
-        <InvitationHistory invitations={[{email:'agharmiou@mail', sentAt:'10/12/2025', status:'accepted'}]}/>
 
         <div className="invitation-tab__note">
           <strong>ℹ️ Note :</strong> Choisissez la méthode d'envoi qui vous convient le mieux parmi les options proposées.
