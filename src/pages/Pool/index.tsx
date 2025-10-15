@@ -23,7 +23,9 @@ const PoolPage = () => {
   const { toast, hideToast } = useToast();
 
   useEffect(() => {
-    refetch();
+    if (user !== undefined) { 
+      refetch();
+    }
   }, [user?.id, refetch]);
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -32,9 +34,19 @@ const PoolPage = () => {
   const poolsArray = Array.isArray(pools) ? pools : [];
   
   const selectedPool: Pool | null = useMemo(
-    () => poolsArray.find(p => p.id === selectedId) ?? null,
+    () => {
+      if (!selectedId || poolsArray.length === 0) return null;
+      const found = poolsArray.find(p => p.id === selectedId) ?? null;
+      return found;
+    },
     [poolsArray, selectedId]
   );
+
+  useEffect(() => {
+    if (selectedId && poolsArray.length > 0 && !selectedPool) {
+      setSelectedId(null);
+    }
+  }, [selectedId, poolsArray, selectedPool]);
 
   const handlePoolDeleted = () => {
     setSelectedId(null);
@@ -45,7 +57,8 @@ const PoolPage = () => {
     refetch();
   };
 
-  if (authLoading) {
+  // Éviter le rendu pendant le loading initial pour éviter les pages blanches
+  if (authLoading || (loading && poolsArray.length === 0)) {
     return (
       <div className={isDesktop ? 'dcontainer pool-loading' : 'mcontainer pool-loading'}>
         <div className="pool-loading-content">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Pool } from "../../../../types/models";
 import InfoTab from "../InfoTab";
 
@@ -23,6 +23,21 @@ const PoolDashboard = ({
   isPublicView?: boolean;
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>(isPublicView ? "documents" : "documents");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [currentPoolId, setCurrentPoolId] = useState<number | null>(pool?.id ?? null);
+
+  useEffect(() => {
+
+    
+    if (pool?.id !== currentPoolId) {
+      setIsTransitioning(true);
+      const timer = setTimeout(() => {
+        setCurrentPoolId(pool?.id ?? null);
+        setIsTransitioning(false);
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [pool?.id, currentPoolId]);
 
   if (!pool) {
     return <EmptyState />;
@@ -68,11 +83,20 @@ const PoolDashboard = ({
       </nav>
 
       <div className="pool-dashboard__content">
-        {activeTab === "documents" && <FilesTab poolId={pool.id} isPublicView={isPublicView} />}
-        {activeTab === "info" && <InfoTab poolId={pool.id} onPoolDeleted={onPoolDeleted} onPoolUpdated={onPoolUpdated} isPublicView={isPublicView} />}
-        {activeTab === "edit" && <FileEditionTab poolId={pool.id} isPublicView={isPublicView} />}
-        {activeTab === "members" && <MembersTab poolId={pool.id} isPublicView={isPublicView} />}
-        {activeTab === "invitations" && <InvitationTab poolId={pool.id} poolName={pool.name} currentUserName={'massine'} isPublicView={isPublicView} />}
+        {isTransitioning ? (
+          <div className="pool-dashboard__transition">
+            <div className="pool-dashboard__transition-spinner" />
+            <p>Chargement de l'espace {pool.name}...</p>
+          </div>
+        ) : (
+          <>
+            {activeTab === "documents" && <FilesTab poolId={pool.id} isPublicView={isPublicView} />}
+            {activeTab === "info" && <InfoTab poolId={pool.id} onPoolDeleted={onPoolDeleted} onPoolUpdated={onPoolUpdated} isPublicView={isPublicView} />}
+            {activeTab === "edit" && <FileEditionTab poolId={pool.id} isPublicView={isPublicView} />}
+            {activeTab === "members" && <MembersTab poolId={pool.id} isPublicView={isPublicView} />}
+            {activeTab === "invitations" && <InvitationTab poolId={pool.id} poolName={pool.name} currentUserName={'massine'} isPublicView={isPublicView} />}
+          </>
+        )}
       </div>
     </div>
   );
