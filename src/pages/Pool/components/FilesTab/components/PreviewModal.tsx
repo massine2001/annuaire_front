@@ -16,6 +16,10 @@ export const PreviewModal = ({ fileName, contentType, url, onClose }: Props) => 
   const isAudio = contentType.startsWith("audio/") || ["mp3","wav","ogg"].includes(ext);
   const isText  = contentType.startsWith("text/")  || ["txt","md","json","xml","csv"].includes(ext);
 
+  const isMobile = useMemo(() => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }, []);
+
   return (
     <div className="files-tab__preview-modal" onClick={onClose}>
       <div className="files-tab__preview-content" onClick={(e) => e.stopPropagation()}>
@@ -27,8 +31,37 @@ export const PreviewModal = ({ fileName, contentType, url, onClose }: Props) => 
         <div className="files-tab__preview-body">
           {isImage && <img src={url} alt={fileName} className="files-tab__preview-image" />}
 
-          {isPdf && (
+          {isPdf && !isMobile && (
             <iframe src={`${url}#toolbar=0`} title={fileName} className="files-tab__preview-iframe" />
+          )}
+
+          {isPdf && isMobile && (
+            <div className="files-tab__preview-mobile-pdf">
+              <div className="files-tab__preview-mobile-pdf-icon">📄</div>
+              <h4>Prévisualisation PDF non disponible sur mobile</h4>
+              <p>Les navigateurs mobiles ont des limitations pour afficher les PDFs intégrés.</p>
+              <div className="files-tab__preview-mobile-pdf-actions">
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="files-tab__preview-mobile-pdf-button"
+                >
+                  Ouvrir dans un nouvel onglet
+                </a>
+                <button
+                  onClick={() => {
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = fileName;
+                    link.click();
+                  }}
+                  className="files-tab__preview-mobile-pdf-button secondary"
+                >
+                  Télécharger le fichier
+                </button>
+              </div>
+            </div>
           )}
 
           {isVideo && (
