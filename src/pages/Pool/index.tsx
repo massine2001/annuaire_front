@@ -13,7 +13,7 @@ import './style.css'
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 const PoolPage = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const fetcher = useCallback(() => {
     if (!user?.id) return fetchPublicPools();
     return fetchPoolsByUserId(user.id);
@@ -44,6 +44,17 @@ const PoolPage = () => {
   const handleCreateSuccess = () => {
     refetch();
   };
+
+  if (authLoading) {
+    return (
+      <div className={isDesktop ? 'dcontainer pool-loading' : 'mcontainer pool-loading'}>
+        <div className="pool-loading-content">
+          <div className="pool-loading-spinner" />
+          Chargement...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={isDesktop ? 'dcontainer' : 'mcontainer'}>
