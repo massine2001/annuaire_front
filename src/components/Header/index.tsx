@@ -2,7 +2,6 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { LABEL_HEADER } from "./constants";
 import './style.css'
-import React from "react";
 
 const Header = () => {
     const { user, logout, isAuthenticated } = useAuth();
