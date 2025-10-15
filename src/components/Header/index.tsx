@@ -2,6 +2,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { LABEL_HEADER } from "./constants";
 import './style.css'
+import React from "react";
 
 const Header = () => {
     const { user, logout, isAuthenticated } = useAuth();
@@ -15,13 +16,15 @@ const Header = () => {
 
     return(
         <nav className="navbar">
-            <NavLink to='/'>
-                {LABEL_HEADER.HOME}
-            </NavLink>
-            <NavLink to='/pool'>
-                {LABEL_HEADER.POOL}
-            </NavLink>
-
+            <div className="sub-nav">
+                <NavLink to='/'>
+                    {LABEL_HEADER.HOME}
+                </NavLink>
+                <NavLink to='/pool'>
+                    {LABEL_HEADER.POOL}
+                </NavLink>
+            </div>
+        
             {isAuthenticated ? (
                 <>
                     <NavLink to='/profil'>
@@ -38,14 +41,15 @@ const Header = () => {
                     </div>
                 </>
             ) : (
-                <div className="navbar-right">
-                    <NavLink to='/login' className="navbar-login">
+                <div className="sub-nav">
+                    <NavLink to='/login' >
                         Se connecter
                     </NavLink>
-                    <NavLink to='/register' className="navbar-register">
+                    <NavLink to='/register' >
                         S'inscrire
                     </NavLink>
                 </div>
+                    
             )}
         </nav>
     )

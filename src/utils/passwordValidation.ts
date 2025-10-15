@@ -36,7 +36,8 @@ export const validatePassword = (password: string): PasswordStrength => {
   }
 
   if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-    errors.push('Au moins un caractère spécial requis (!@#$%^&*...)');
+    score = Math.max(0, score - 1);
+    suggestions.push('Ajouter un caractère spécial améliore la sécurité (!@#$%^&*...)');
   } else {
     score++;
   }
@@ -44,9 +45,9 @@ export const validatePassword = (password: string): PasswordStrength => {
   if (score < 3) {
     suggestions.push('Mot de passe très faible');
     suggestions.push('Ajoutez plus de types de caractères différents');
-  } else if (score < 5) {
+  } else if (score < 4) {
     suggestions.push('Mot de passe moyen');
-    suggestions.push('Ajoutez plus de caractères pour le renforcer');
+    suggestions.push('Ajoutez des caractères spéciaux ou allongez le mot de passe');
   }
 
   if (password.length > 0) {
@@ -67,7 +68,7 @@ export const validatePassword = (password: string): PasswordStrength => {
   }
 
   return {
-    isValid: errors.length === 0 && score >= 5,
+    isValid: errors.length === 0 && score >= 4,
     score,
     errors,
     suggestions,

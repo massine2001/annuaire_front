@@ -169,5 +169,6 @@
 
   .pool-list__grid {
     grid-template-columns: 1fr;
+    gap: 5vh;
   }
 }

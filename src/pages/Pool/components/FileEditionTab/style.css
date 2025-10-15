@@ -61,8 +61,8 @@
 }
 
 .document-form__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
   background: #f9f9f9;
 }
@@ -81,11 +81,6 @@
   border-radius: 4px;
   font-size: 0.8rem;
   gap: 0.3rem;
-}
-
-/* Le dernier élément prend 2 colonnes (toute la largeur) */
-.document-form__field:last-child {
-  grid-column: 1 / -1;
 }
 
 .document-form__label {

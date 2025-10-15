@@ -69,8 +69,8 @@ const PasswordStrengthIndicator = ({
             <li className={/[0-9]/.test(password) ? 'valid' : 'invalid'}>
               {/[0-9]/.test(password) ? '✓' : '✗'} Un chiffre
             </li>
-            <li className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? 'valid' : 'invalid'}>
-              {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? '✓' : '✗'} Un caractère spécial
+            <li className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? 'valid' : 'optional'}>
+              {/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) ? '✓' : '○'} Un caractère spécial (recommandé)
             </li>
           </ul>
 

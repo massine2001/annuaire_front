@@ -77,6 +77,12 @@
   align-items: center;
   gap: 1rem;
 }
+@media (max-width: 768px) {
+  .files-tab__header {
+    flex-wrap: wrap;
+  }
+}
+
 
 .files-tab__search {
   flex: 1;
@@ -229,6 +235,12 @@
   border-radius: 4px;
   transition: background 0.15s ease;
 }
+@media (max-width: 768px) {
+  .files-tab__file{
+    gap: 0.25rem;
+  }
+}
+
 
 .files-tab__file:hover {
   background: #f0f0f0;
@@ -280,6 +292,11 @@
 .files-tab__file-actions {
   display: flex;
   gap: 0.4rem;
+}
+@media (max-width: 768px) {
+  .files-tab__file-actions {
+    flex-direction: column-reverse;
+  }
 }
 
 .files-tab__action-btn {

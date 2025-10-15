@@ -35,6 +35,11 @@
   background-color: rgb(234, 234, 234);
   border-bottom: 1px solid #000;
 }
+@media (max-width: 768px) {
+  .pool-dashboard__tabs {
+    flex-wrap: wrap;
+  }
+}
 
 .pool-dashboard__tab {
   flex: 1;
@@ -66,6 +71,12 @@
   padding: 0.75rem;
   overflow-y: auto;
 }
+@media (max-width: 768px) {
+  .pool-dashboard__content {
+    padding: 0.5rem 0;
+  }
+}
+
 
 .pool-dashboard__empty {
   display: flex;

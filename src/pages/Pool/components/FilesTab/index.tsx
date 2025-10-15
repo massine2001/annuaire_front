@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useFetch } from "../../../../hooks/useFetch";
 import { fetchFilesByPoolId } from "../../../../api/poolPageApi";
-import { fetchPublicPoolFiles } from "../../../../api/publicPoolsApi";
+import { fetchPublicPoolFiles, downloadPublicFile, previewPublicFile } from "../../../../api/publicPoolsApi";
 import { downloadFile, previewFile } from "../../../../api/filePageApi";
 import type { File } from "../../../../types/models";
 import "./style.css";
@@ -40,14 +40,14 @@ const FilesTab = ({ poolId, isPublicView = false }: { poolId: number; isPublicVi
 
   const handleDownload = useCallback(async (fileId: number, fileName: string) => {
     setDownloading(fileId);
-    const result = await downloadFile(fileId, fileName);
+    const result = isPublicView ? await downloadPublicFile(fileId, fileName) : await downloadFile(fileId, fileName);
     setDownloading(null);
     if (!result.success) alert("Erreur lors du téléchargement du fichier");
-  }, []);
+  }, [isPublicView]);
 
   const handlePreview = useCallback(async (fileId: number, fileName: string) => {
     setPreviewing(fileId);
-    const result = await previewFile(fileId);
+    const result = isPublicView ? await previewPublicFile(fileId) : await previewFile(fileId);
     setPreviewing(null);
     if (result.success && result.url) {
       setPreviewUrl(result.url);
@@ -56,7 +56,7 @@ const FilesTab = ({ poolId, isPublicView = false }: { poolId: number; isPublicVi
     } else {
       alert("Erreur lors de la prévisualisation du fichier");
     }
-  }, []);
+  }, [isPublicView]);
 
   const closePreview = useCallback(() => {
     if (previewUrl) window.URL.revokeObjectURL(previewUrl);

@@ -19,6 +19,7 @@ const AddDocument = ({ poolId, isPublicView = false }: Props) => {
         (data: DocumentFormData) => uploadFile(
             data.file!,
             poolId,
+            data.name,
             data.description,
             data.expirationDate,
             (progress) => setUploadProgress(progress)

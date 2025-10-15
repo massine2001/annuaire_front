@@ -7,6 +7,7 @@ export const fetchAllFiles = () =>
 export const uploadFile = (
   file: globalThis.File, 
   poolId: number,
+  name?: string,
   description?: string,
   expirationDate?: string,
   onProgress?: (progress: number) => void
@@ -14,6 +15,7 @@ export const uploadFile = (
   const formData = new FormData();
   formData.append('file', file);
   formData.append('poolId', poolId.toString());
+  if (name) formData.append('name', name);
   if (description) formData.append('description', description);
   if (expirationDate) formData.append('expirationDate', expirationDate);
   

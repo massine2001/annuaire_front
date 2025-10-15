@@ -45,12 +45,6 @@ export const DetailsModal = memo(({ file, onClose }: Props) => {
               </div>
             )}
 
-            {file.path && (
-              <div className="details-modal__field">
-                <span className="details-modal__label">Chemin</span>
-                <span className="details-modal__value details-modal__path">{file.path}</span>
-              </div>
-            )}
           </div>
 
           <div className="details-modal__section">
@@ -104,9 +98,9 @@ export const DetailsModal = memo(({ file, onClose }: Props) => {
             )}
           </div>
 
-          {file.pool && (
+          {file.pool?.name && (
             <div className="details-modal__section">
-              <h3 className="details-modal__section-title">🏊 Pool</h3>
+              <h3 className="details-modal__section-title">Pool</h3>
               
               <div className="details-modal__field">
                 <span className="details-modal__label">Nom</span>

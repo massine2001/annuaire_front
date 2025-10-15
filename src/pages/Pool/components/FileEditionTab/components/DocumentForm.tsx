@@ -84,24 +84,20 @@ const DocumentForm = ({
         <form onSubmit={handleSubmit}>
             <section className="document-form__section">
                 <div className="document-form__grid">
-                    <div className="document-form__field">
-                        <span className="document-form__label">Nom *</span>
-                        <input 
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="ex: Passeport français"
-                            required
-                        />
-                    </div>
-
-                    <div className="document-form__field">
+                      <div className="document-form__field">
                         <span className="document-form__label">
                             Fichier {isEdit ? "(optionnel)" : "*"}
                         </span>
                         <input 
                             type="file"
-                            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                            onChange={(e) => {
+                                const selectedFile = e.target.files?.[0] ?? null;
+                                setFile(selectedFile);
+                                if (selectedFile && !name.trim()) {
+                                    const fileNameWithoutExt = selectedFile.name.replace(/\.[^/.]+$/, "");
+                                    setName(fileNameWithoutExt);
+                                }
+                            }}
                             accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                             required={!isEdit}
                             id="file-input"
@@ -138,6 +134,17 @@ const DocumentForm = ({
                                 Laissez vide pour conserver le fichier actuel
                             </small>
                         )}
+                    </div>
+
+                    <div className="document-form__field">
+                        <span className="document-form__label">Nom *</span>
+                        <input 
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="ex: Passeport français"
+                            required
+                        />
                     </div>
 
                     <div className="document-form__field">

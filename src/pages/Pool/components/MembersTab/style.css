@@ -846,17 +846,10 @@
     align-items: stretch;
   }
 
-  .members-tab__search {
-    min-width: 100%;
-  }
 
   .members-tab__filters {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .members-tab__radio-group {
-    flex-direction: column;
   }
 
   .members-tab__member {
