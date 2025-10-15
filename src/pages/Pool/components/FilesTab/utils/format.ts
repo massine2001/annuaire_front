@@ -1,4 +1,5 @@
-export function formatDate(dateString: string) {
+export function formatDate(dateString: string | undefined) {
+  if (!dateString) return "Date inconnue";
   return new Date(dateString).toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "short",
@@ -8,14 +9,16 @@ export function formatDate(dateString: string) {
   });
 }
 
-export function formatMonthYear(dateString: string) {
+export function formatMonthYear(dateString: string | undefined) {
+  if (!dateString) return "Date inconnue";
   return new Date(dateString).toLocaleDateString("fr-FR", {
     year: "numeric",
     month: "long",
   });
 }
 
-export function getExt(name: string): string {
+export function getExt(name: string | undefined): string {
+  if (!name) return "";
   const parts = name.split(".");
   return parts.length > 1 ? parts.pop()!.toLowerCase() : "";
 }

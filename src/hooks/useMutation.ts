@@ -9,15 +9,12 @@ export function useMutation<TData = unknown, TVariables = unknown>(
   const [success, setSuccess] = useState(false);
 
   const execute = async (variables: TVariables) => {
-    console.time('Mutation execute');
     setLoading(true);
     setError(null);
     setSuccess(false);
     
     try {
-      console.timeLog('Mutation execute', 'Starting mutateFn');
       const result = await mutateFn(variables);
-      console.timeLog('Mutation execute', 'mutateFn completed');
       setData(result);
       setSuccess(true);
       
@@ -25,7 +22,6 @@ export function useMutation<TData = unknown, TVariables = unknown>(
         setSuccess(false);
       }, 3000);
       
-      console.timeEnd('Mutation execute');
       return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Une erreur est survenue";

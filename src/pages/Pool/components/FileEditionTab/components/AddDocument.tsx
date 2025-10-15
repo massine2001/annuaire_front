@@ -39,9 +39,7 @@ const AddDocument = ({ poolId, isPublicView = false }: Props) => {
 
     const handleSubmit = async (data: DocumentFormData) => {
         if (!data.file) return;
-        console.time(`Total upload process for ${data.file.name}`);
         await execute(data);
-        console.timeEnd(`Total upload process for ${data.file.name}`);
     };
 
     useEffect(() => {

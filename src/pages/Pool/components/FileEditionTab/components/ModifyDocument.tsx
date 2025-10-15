@@ -62,12 +62,14 @@ const ModifyDocument = ({ poolId, isPublicView = false }: Props) => {
         hideToastRef.current = hideToast;
     });
     
-    const getNameWithoutExtension = (fullName: string) => {
+    const getNameWithoutExtension = (fullName: string | undefined) => {
+        if (!fullName) return '';
         const lastDotIndex = fullName.lastIndexOf('.');
         return lastDotIndex > 0 ? fullName.substring(0, lastDotIndex) : fullName;
     };
     
-    const getExtension = (fullName: string) => {
+    const getExtension = (fullName: string | undefined) => {
+        if (!fullName) return '';
         const lastDotIndex = fullName.lastIndexOf('.');
         return lastDotIndex > 0 ? fullName.substring(lastDotIndex) : '';
     };
