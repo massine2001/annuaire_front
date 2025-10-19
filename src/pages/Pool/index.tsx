@@ -79,7 +79,7 @@ const PoolPage = () => {
         onSelect={setSelectedId}
         config={{
           title: user ? "Liste des Pools" : "Pools Publics",
-          searchPlaceholder: "Rechercher une pool...",
+          searchPlaceholder: "Cliquez pour afficher les pools",
           actionButtonText: user ? "Créer une Pool" : undefined,
           onActionClick: user ? () => setIsCreateModalOpen(true) : undefined,
           getSearchText: (pool) => pool.name,
