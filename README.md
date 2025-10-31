@@ -1,6 +1,16 @@
 # 📁 Annuaire - Gestionnaire de Documents Partagés
 
-Application web de gestion de documents partagés en pools (groupes). Permet aux utilisateurs de créer des espaces collaboratifs sécurisés pour partager et gérer des fichiers.
+
+## 🕘 Version antérieure de docsManager
+
+Ce projet correspond à la **version initiale du front-end de docsManager**, conçue pour interagir avec le back-end `annuaire_back_jwt_auth`.  
+L’authentification reposait sur des **JWT classiques** : le front recevait le token directement après login et l’envoyait dans chaque requête HTTP.  
+Cette approche a ensuite été remplacée par une architecture intégrant un **BFF** et un **serveur d’autorisation (OIDC)** afin d’assurer une meilleure sécurité et une isolation complète des responsabilités.  
+
+La version moderne de la plateforme est disponible ici : [massine2001/docsManager](https://github.com/massine2001/docsManager).
+
+
+
 
 
 ###  Authentification 
